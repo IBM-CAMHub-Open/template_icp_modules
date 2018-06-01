@@ -29,7 +29,7 @@ variable "enable_vm" {
 
 #Variable : vm_-name
 variable "vm_name" {
-  type = "string"
+  type = "list"
 }
 variable "count" {
   type = "string"
@@ -149,7 +149,12 @@ variable "vm_disk2_keep_on_remove" {
 variable "vm_disk2_datastore" {
   description = "Data store or storage cluster name for target virtual machine's disks"
 }
-variable "random" { type = "string" description = "Random String Generated"}
+
+variable "random" {
+  type = "string"
+
+  description = "Random String Generated"
+}
 
 variable "dependsOn" {
   default = "true"
