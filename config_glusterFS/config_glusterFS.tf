@@ -47,6 +47,12 @@ resource "null_resource" "load_device_script" {
     password    = "${var.vm_os_password}"
     private_key = "${var.private_key}"
     host        = "${var.vm_ipv4_address_list[count.index]}"
+    bastion_host        = "${var.bastion_host}"
+    bastion_user        = "${var.bastion_user}"
+    bastion_private_key = "${ length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
+    bastion_port        = "${var.bastion_port}"
+    bastion_host_key    = "${var.bastion_host_key}"
+    bastion_password    = "${var.bastion_password}"            
   }
 
   provisioner "file" {
@@ -71,7 +77,9 @@ resource "null_resource" "load_device_script" {
       "sed -i 's/@@host@@/${var.vm_ipv4_address_list[count.index]}/g' /tmp/get-device-path.properties",
       "/tmp/get-device-path.sh part1 /tmp/get-device-path.properties",
       "/tmp/get-device-path.sh part2 /tmp/get-device-path.properties",
-      "scp /tmp/glusterfs.txt ${var.boot_vm_ipv4_address}:/root",
+      "apt-get install sshpass",
+      "ssh-keyscan ${var.boot_vm_ipv4_address} >> ~/.ssh/known_hosts",
+      "sshpass -p ${var.vm_os_password} scp /tmp/glusterfs.txt ${var.boot_vm_ipv4_address}:/root",
     ]
   }
 }
@@ -87,6 +95,12 @@ resource "null_resource" "load_gluster_prereqs" {
     password    = "${var.vm_os_password}"
     private_key = "${var.private_key}"
     host        = "${var.vm_ipv4_address_list[count.index]}"
+    bastion_host        = "${var.bastion_host}"
+    bastion_user        = "${var.bastion_user}"
+    bastion_private_key = "${ length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
+    bastion_port        = "${var.bastion_port}"
+    bastion_host_key    = "${var.bastion_host_key}"
+    bastion_password    = "${var.bastion_password}"            
   }
 
   provisioner "file" {
