@@ -105,7 +105,6 @@ resource "null_resource" "setup_installer_tar" {
       "sed -i 's/# proxy_vip.*/proxy_vip: ${var.proxy_vip}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "cd  /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
       "sudo docker run --net=host -t -e LICENSE=accept  -v $(pwd):/installer/cluster ibmcom/icp-inception:${var.icp_version}-ee install | sudo tee -a /root/cfc-install.log",
-      "docker run -e LICENSE=accept --net=host --rm -v /usr/local/bin:/data ibmcom/hyperkube:v${var.kub_version}-ee cp /kubectl /data",
     ]
   }
 }
