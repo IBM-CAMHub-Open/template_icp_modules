@@ -19,10 +19,26 @@ resource "null_resource" "mkdir-boot-node" {
     bastion_host_key    = "${var.bastion_host_key}"
     bastion_password    = "${var.bastion_password}"  
   }
+
+  provisioner "file" {
+    source = "${path.module}/scripts/download_icp.sh"
+    destination = "/tmp/download_icp.sh"
+  }
+
+  provisioner "file" {
+    source = "${path.module}/scripts/rollback_icp.sh"
+    destination = "/tmp/rollback_icp.sh"
+  }
+
+  provisioner "file" {
+    source = "${path.module}/scripts/upgrade_icp.sh"
+    destination = "/tmp/upgrade_icp.sh"
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "rm -rf /root/ibm-cloud-private-x86_64-${var.icp_version}",
-      "mkdir -p /root/ibm-cloud-private-x86_64-${var.icp_version}"
+      "[ ${var.icp_version} != \"2.1.0.3-fp1\" ] && rm -rf /root/ibm-cloud-private-x86_64-${var.icp_version} || :",
+      "[ ${var.icp_version} != \"2.1.0.3-fp1\" ] && mkdir -p /root/ibm-cloud-private-x86_64-${var.icp_version} || :"
     ]
   }
 }
@@ -44,26 +60,11 @@ resource "null_resource" "load_icp_images" {
     bastion_password    = "${var.bastion_password}"  
   }
   
-  provisioner "file" {
-    source = "${path.module}/scripts/download_icp.sh"
-    destination = "/root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh"
-  }
-
-  provisioner "file" {
-    source = "${path.module}/scripts/rollback_icp.sh"
-    destination = "/root/ibm-cloud-private-x86_64-${var.icp_version}/rollback_icp.sh"
-  }
-
-  provisioner "file" {
-    source = "${path.module}/scripts/upgrade_icp.sh"
-    destination = "/root/ibm-cloud-private-x86_64-${var.icp_version}/upgrade_icp.sh"
-  }
-  
   provisioner "remote-exec" {
     inline = [
-      "chmod 755 /root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh",
-      "echo /root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}",
-      "bash -c '/root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}'"
+      "chmod 755 /tmp/download_icp.sh",
+      "echo /tmp/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}",
+      "bash -c '/tmp/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}'"
     ]
   }
 }
@@ -86,32 +87,20 @@ resource "null_resource" "icp_upgrade" {
 
   provisioner "remote-exec" {
     inline = [
-      "cp -r ${var.cluster_location}/cfc-certs /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
-      "cp -r ${var.cluster_location}/cfc-keys /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
-      "cp -r ${var.cluster_location}/cfc-components /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
-      "cp ${var.cluster_location}/hosts /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
-      "cp ${var.cluster_location}/ssh_key /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
-
-      "sed -i -e 's/\"vulnerability-advisor\"/\"va\", \"vulnerability-advisor\"/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-      "echo \"version: ${var.icp_version}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-      "sed -e '1,/^version: \\b/d' ${var.cluster_location}/config.yaml >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-      "grep \"^ingress_controller:\" -q ${var.cluster_location}/config.yaml && printf \"nginx-ingress:\ningress:\nconfig:\n\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-      "sed -n '/^disable-access-log:/p' ${var.cluster_location}/config.yaml >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-
-      "cd /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
-      "chmod 755 /root/ibm-cloud-private-x86_64-${var.icp_version}/upgrade_icp.sh",
-      "echo /root/ibm-cloud-private-x86_64-${var.icp_version}/upgrade_icp.sh ${var.icp_version}",
-      "/root/ibm-cloud-private-x86_64-${var.icp_version}/upgrade_icp.sh ${var.icp_version}"
+      "[ ${var.icp_version} != \"2.1.0.3-fp1\" ] && cd /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster || cd /root/ibm-cloud-private-x86_64-2.1.0.3/cluster",
+      "chmod 755 /tmp/upgrade_icp.sh",
+      "echo /tmp/upgrade_icp.sh ${var.icp_version} ${var.cluster_location}",
+      "/tmp/upgrade_icp.sh ${var.icp_version} ${var.cluster_location}"
     ]
   }
 
   provisioner "remote-exec" {
     when                  = "destroy"
     inline                = [
-      "chmod 755 /root/ibm-cloud-private-x86_64-${var.icp_version}/rollback_icp.sh",
-      "cd /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
-      "echo /root/ibm-cloud-private-x86_64-${var.icp_version}/rollback_icp.sh ${var.icp_version} ${var.icp_cluster_name} ${var.kube_apiserver_secure_port} ${var.master_node_ip} ${var.cluster_vip}",
-      "/root/ibm-cloud-private-x86_64-${var.icp_version}/rollback_icp.sh ${var.icp_version} ${var.icp_cluster_name} ${var.kube_apiserver_secure_port} ${var.master_node_ip} ${var.cluster_vip}"
+      "[ ${var.icp_version} != \"2.1.0.3-fp1\" ] && cd /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster || cd /root/ibm-cloud-private-x86_64-2.1.0.3/cluster",
+      "chmod 755 /tmp/rollback_icp.sh",
+      "echo /tmp/rollback_icp.sh ${var.icp_version} ${var.icp_cluster_name} ${var.kube_apiserver_secure_port} ${var.master_node_ip}",
+      "/tmp/rollback_icp.sh ${var.icp_version} ${var.icp_cluster_name} ${var.kube_apiserver_secure_port} ${var.master_node_ip}"
     ]
   }
 }

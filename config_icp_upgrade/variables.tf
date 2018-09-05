@@ -45,10 +45,6 @@ variable "master_node_ip" {
   type = "string"
 }
 
-variable "cluster_vip" {
-  type = "string"
-}
-
 variable "kube_apiserver_secure_port" {
   type = "string"
 }
