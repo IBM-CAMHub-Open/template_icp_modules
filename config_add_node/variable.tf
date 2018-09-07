@@ -33,6 +33,10 @@ variable "cluster_location" {
   description = "Location to ICP cluster folder"
 }
 
+variable "enable_glusterFS" {
+  type = "string"
+}
+
 variable "dependsOn" {
   description = "Boolean for dependency"
   default = "true"

@@ -27,6 +27,11 @@ resource "null_resource" "addNode" {
     destination = "/tmp/add_public_key.sh"
   }
 
+  provisioner "file" {
+    source      = "${path.module}/scripts/config_glusterfs.sh"
+    destination = "/tmp/config_glusterfs.sh"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "chmod 755 /tmp/add_public_key.sh",
@@ -34,6 +39,8 @@ resource "null_resource" "addNode" {
       "cp /root/.ssh/id_rsa /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/ssh_key",
       "cd ${var.cluster_location}",
       "docker run -e LICENSE=accept --net=host -v $(pwd):/installer/cluster ibmcom/icp-inception:${var.icp_version}-ee ${var.node_type} -l ${join(",", var.new_node_IPs)}",
+      "chmod 755 /tmp/config_glusterfs.sh",
+      "/tmp/config_glusterfs.sh ${var.enable_glusterFS} ${var.node_type} /root/glusterfs.txt ${var.cluster_location} ${var.icp_version}",
     ]
   }
 

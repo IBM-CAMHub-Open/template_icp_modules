@@ -30,7 +30,8 @@ else
                 printf "\033[32m[*] upgrade-mgtsvc Succeeded \033[0m\n"
                 if docker run -e LICENSE=accept --net=host --rm -t -v "$(pwd)":/installer/cluster ibmcom/icp-inception:$1-ee upgrade-post ; then
                     printf "\033[32m[*] Upgraded to new ICP version \033[0m\n"
-                    sed -i -e 's/^glusterfs: false/glusterfs: true/g' $2/config.yaml
+                    grep -Fxq "## GlusterFs was true" $2/config.yaml && sed -i -e 's/^glusterfs: false/glusterfs: true/g' $2/config.yaml
+                    sed -i '/## GlusterFs was true/d' $2/config.yaml
                 else
                     printf "\033[31m[ERROR] upgrade-post Failed\033[0m\n"
                     exit 1
