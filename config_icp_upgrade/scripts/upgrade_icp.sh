@@ -18,9 +18,13 @@ else
     grep -Fxq "glusterfs: true" $2/config.yaml && sed -i -e '/## GlusterFS Settings/a ## GlusterFs was true' $2/config.yaml
     sed -i -e 's/^glusterfs: true/glusterfs: false/g' $2/config.yaml
     echo "version: $1" >> /root/ibm-cloud-private-x86_64-$1/cluster/config.yaml
-    sed -e '1,/^version: \b/d' $2/config.yaml >> /root/ibm-cloud-private-x86_64-$1/cluster/config.yaml
+    #sed -e '1,/^version: \b/d' $2/config.yaml >> /root/ibm-cloud-private-x86_64-$1/cluster/config.yaml
     grep "^ingress_controller:" -q $2/config.yaml && printf "nginx-ingress:\ningress:\nconfig:\n" >> /root/ibm-cloud-private-x86_64-$1/cluster/config.yaml
     sed -n '/^disable-access-log:/p' $2/config.yaml >> /root/ibm-cloud-private-x86_64-$1/cluster/config.yaml
+    sed -n '/^vip_iface:/p' $2/config.yaml >> /root/ibm-cloud-private-x86_64-$1/cluster/config.yaml
+    sed -n '/^cluster_vip:/p' $2/config.yaml >> /root/ibm-cloud-private-x86_64-$1/cluster/config.yaml
+    sed -n '/^proxy_vip_iface:/p' $2/config.yaml >> /root/ibm-cloud-private-x86_64-$1/cluster/config.yaml
+    sed -n '/^proxy_vip:/p' $2/config.yaml >> /root/ibm-cloud-private-x86_64-$1/cluster/config.yaml
 
     if docker run -e LICENSE=accept --net=host --rm -t -v "$(pwd)":/installer/cluster ibmcom/icp-inception:$1-ee upgrade-prepare ; then
         printf "\033[32m[*] upgrade-prepare Succeeded \033[0m\n"

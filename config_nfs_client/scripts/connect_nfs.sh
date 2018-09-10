@@ -81,8 +81,9 @@ if [ $? != 0 ]; then
   echo "[ERROR] There was an error creating the mount point folder: '$MOUNT_POINT'"
   exit 1
 fi
+sed -i '/^192.1./d' /etc/fstab
 echo "Adding NFS server to fstab"
-echo "$NFS_SERVER:$NFS_FOLDER $MOUNT_POINT  nfs4 rsize=1048576,hard,timeo=600,retrans=2,rw 0 0" >> /etc/fstab
+echo "$NFS_SERVER:$NFS_FOLDER $MOUNT_POINT  nfs rsize=1048576,hard,timeo=600,retrans=2,rw 0 0" >> /etc/fstab
 echo "Mounting NFS Server"
 mount $NFS_SERVER:$NFS_FOLDER $MOUNT_POINT
 if [ $? != 0 ]; then
