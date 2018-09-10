@@ -130,6 +130,12 @@ if [ -n $PARAM_ICP ]; then
       printf "\033[32m[ ] Loading TAR file into Docker images....!\033[0m\n"
       tar -xf  /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME} -O | sudo docker load
       printf "\033[32m[*] Loading TAR file Completed Docker images\033[0m\n"
+
+      if [[ "$ARCH" = "ppc64le" && "$PARAM_ICP_VERSION" = "2.1.0.2" ]]; then
+          printf "\033[32m[*] Tagging ICP inception image ibmcom/icp-inception-ppc64le:2.1.0.2-ee to ibmcom/icp-inception:2.1.0.2-ee\033[0m\n"
+          docker tag ibmcom/icp-inception-ppc64le:2.1.0.2-ee ibmcom/icp-inception:2.1.0.2-ee
+      fi
+
       cd /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}
       docker run -v $(pwd):/data -e LICENSE=accept ibmcom/icp-inception:${PARAM_ICP_VERSION}-ee cp -r cluster /data
       mkdir -p cluster/images; mv ${ICP_INSTALLER_FILE_NAME} cluster/images/
