@@ -135,9 +135,9 @@ if [ -n $PARAM_ICP ]; then
           printf "\033[32m[*] Tagging ICP inception image ibmcom/icp-inception-ppc64le:2.1.0.2-ee to ibmcom/icp-inception:2.1.0.2-ee\033[0m\n"
           docker tag ibmcom/icp-inception-ppc64le:2.1.0.2-ee ibmcom/icp-inception:2.1.0.2-ee
       fi
-
+      export DOCKER_REPO=`docker images |grep inception |grep $PARAM_ICP_VERSION |awk '{print $1}'`
       cd /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}
-      docker run -v $(pwd):/data -e LICENSE=accept ibmcom/icp-inception:${PARAM_ICP_VERSION}-ee cp -r cluster /data
+      docker run -v $(pwd):/data -e LICENSE=accept $DOCKER_REPO:${PARAM_ICP_VERSION}-ee cp -r cluster /data
       mkdir -p cluster/images; mv ${ICP_INSTALLER_FILE_NAME} cluster/images/
     fi 
 

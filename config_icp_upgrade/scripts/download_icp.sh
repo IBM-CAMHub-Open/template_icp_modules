@@ -137,7 +137,8 @@ if [ -n $PARAM_ICP ]; then
         tar -xf  /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME} -O | sudo docker load
         printf "\033[32m[*] Loading TAR file Completed Docker images\033[0m\n"
         cd /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}
-        docker run -v $(pwd):/data -e LICENSE=accept ibmcom/icp-inception:${PARAM_ICP_VERSION}-ee cp -r cluster /data
+        export DOCKER_REPO=`docker images |grep inception |grep $PARAM_ICP_VERSION |awk '{print $1}'`
+        docker run -v $(pwd):/data -e LICENSE=accept $DOCKER_REPO:${PARAM_ICP_VERSION}-ee cp -r cluster /data
         mkdir -p cluster/images; mv ${ICP_INSTALLER_FILE_NAME} cluster/images/
       fi
     fi 

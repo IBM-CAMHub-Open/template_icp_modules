@@ -90,7 +90,8 @@ resource "null_resource" "load_icp_images" {
       "echo /root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}",
       "bash -c '/root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}'"
       # "tar -xf  ibm-cloud-private-x86_64-${var.ICP_Version}.tar.gz -O | sudo docker load",
-      # "docker run -v $(pwd):/data -e LICENSE=accept ibmcom/icp-inception:${var.ICP_Version}-ee cp -r cluster /data",
+      # export DOCKER_REPO=`docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`.
+      # "docker run -v $(pwd):/data -e LICENSE=accept $DOCKER_REPO:${var.ICP_Version}-ee cp -r cluster /data",
       # "mkdir -p cluster/images; mv ibm-cloud-private-x86_64-${var.ICP_Version}.tar.gz cluster/images/"
     ]
   }

@@ -96,7 +96,8 @@ resource "null_resource" "setup_installer_tar" {
       "sed -i 's/default_admin_password.*/default_admin_password: ${var.icp_admin_password}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "cp /root/.ssh/id_rsa /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/ssh_key",
       "cd  /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
-      "sudo docker run --net=host -t -e LICENSE=accept  -v $(pwd):/installer/cluster ibmcom/icp-inception:${var.icp_version}-ee install | sudo tee -a /root/cfc-install.log",
+      "export DOCKER_REPO=`docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`", 
+      "sudo docker run --net=host -t -e LICENSE=accept  -v $(pwd):/installer/cluster $DOCKER_REPO:${var.icp_version}-ee install | sudo tee -a /root/cfc-install.log",
     ]
 
     # "echo \"      ${var.gluster_volumetype}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",

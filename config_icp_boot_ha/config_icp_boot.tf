@@ -60,7 +60,8 @@ resource "null_resource" "setup_installer" {
       "cp /root/.ssh/id_rsa /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/ssh_key",
       "cd  /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
       "sudo docker login -u token -p ${var.bluemix_token} registry.ng.bluemix.net",
-      "sudo docker run --net=host -t -e LICENSE=accept  -v $(pwd):/installer/cluster registry.ng.bluemix.net/mdelder/icp-inception:${var.icp_version} install | tee /tmp/installlog",
+      "export DOCKER_REPO=`docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`",
+      "sudo docker run --net=host -t -e LICENSE=accept  -v $(pwd):/installer/cluster ${DOCKER_REPO}:${var.icp_version} install | tee /tmp/installlog",
     ]
   }
 }
@@ -103,8 +104,9 @@ resource "null_resource" "setup_installer_tar" {
       "sed -i 's/# vip_iface.*/vip_iface: ${var.cluster_vip_iface}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "sed -i 's/# proxy_vip_iface.*/proxy_vip_iface: ${var.proxy_vip_iface}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "sed -i 's/# proxy_vip.*/proxy_vip: ${var.proxy_vip}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-      "cd  /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
-      "sudo docker run --net=host -t -e LICENSE=accept  -v $(pwd):/installer/cluster ibmcom/icp-inception:${var.icp_version}-ee install | sudo tee -a /root/cfc-install.log",
+      "cd /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
+      "export DOCKER_REPO=`docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`",
+      "sudo docker run --net=host -t -e LICENSE=accept  -v $(pwd):/installer/cluster $DOCKER_REPO:${var.icp_version}-ee install | sudo tee -a /root/cfc-install.log",
     ]
   }
 }

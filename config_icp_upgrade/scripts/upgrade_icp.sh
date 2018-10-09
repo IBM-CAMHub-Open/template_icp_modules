@@ -1,4 +1,5 @@
 #!/bin/bash
+export DOCKER_REPO=`docker images |grep inception |grep $PARAM_ICP_VERSION |awk '{print $1}'`
 
 if [[ $1 == "2.1.0.3-fp1" ]] ; then
     if docker run -e TMPDIR=/installer/cluster -e LICENSE=accept -t --net=host -v "$(pwd)":/installer/cluster ibmcom/icp-inception:2.1.0.3-ee ./cluster/ibm-cloud-private-2.1.0.3-fp1.sh ; then
@@ -26,13 +27,13 @@ else
     sed -n '/^proxy_vip_iface:/p' $2/config.yaml >> /root/ibm-cloud-private-x86_64-$1/cluster/config.yaml
     sed -n '/^proxy_vip:/p' $2/config.yaml >> /root/ibm-cloud-private-x86_64-$1/cluster/config.yaml
 
-    if docker run -e LICENSE=accept --net=host --rm -t -v "$(pwd)":/installer/cluster ibmcom/icp-inception:$1-ee upgrade-prepare ; then
+    if docker run -e LICENSE=accept --net=host --rm -t -v "$(pwd)":/installer/cluster $DOCKER_REPO:$1-ee upgrade-prepare ; then
         printf "\033[32m[*] upgrade-prepare Succeeded \033[0m\n"
-        if docker run -e LICENSE=accept --net=host --rm -t -v "$(pwd)":/installer/cluster ibmcom/icp-inception:$1-ee upgrade-k8s ; then
+        if docker run -e LICENSE=accept --net=host --rm -t -v "$(pwd)":/installer/cluster $DOCKER_REPO:$1-ee upgrade-k8s ; then
             printf "\033[32m[*] upgrade-k8s Succeeded \033[0m\n"
-            if docker run -e LICENSE=accept --net=host --rm -t -v "$(pwd)":/installer/cluster ibmcom/icp-inception:$1-ee upgrade-mgtsvc ; then
+            if docker run -e LICENSE=accept --net=host --rm -t -v "$(pwd)":/installer/cluster $DOCKER_REPO:$1-ee upgrade-mgtsvc ; then
                 printf "\033[32m[*] upgrade-mgtsvc Succeeded \033[0m\n"
-                if docker run -e LICENSE=accept --net=host --rm -t -v "$(pwd)":/installer/cluster ibmcom/icp-inception:$1-ee upgrade-post ; then
+                if docker run -e LICENSE=accept --net=host --rm -t -v "$(pwd)":/installer/cluster $DOCKER_REPO:$1-ee upgrade-post ; then
                     printf "\033[32m[*] Upgraded to new ICP version \033[0m\n"
                     grep -Fxq "## GlusterFs was true" $2/config.yaml && sed -i -e 's/^glusterfs: false/glusterfs: true/g' $2/config.yaml
                     sed -i '/## GlusterFs was true/d' $2/config.yaml

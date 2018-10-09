@@ -30,23 +30,23 @@ echo "$NUM_MASTER"
 echo "$NUM_MANAGEMENT"
 # Create Endpoint Based on Gluster Cluster IPs
 
-KUB_CMDS="kubelet_extra_args='[\"--eviction-hard=memory.available<100Mi,nodefs.available<2Gi,nodefs.inodesFree<5\"]',\"--image-gc-high-threshold=100\",\"--image-gc-low-threshold=100\""
+#KUB_CMDS="kubelet_extra_args='[\"--eviction-hard=memory.available<100Mi,nodefs.available<2Gi,nodefs.inodesFree<5\"]',\"--image-gc-high-threshold=100\",\"--image-gc-low-threshold=100\""
 
 icp_hosts_txt=$(
   if [ ${NUM_MANAGEMENT} -gt 0 ]
   then
     echo '[management]'
     for ((i=0; i < ${NUM_MANAGEMENT}; i++)); do
-      echo "${mymanagementarray[i]} ${KUB_CMDS}"
+      echo "${mymanagementarray[i]}"
     done
   fi
   echo "[master]"
   for ((i=0; i < ${NUM_MASTER}; i++)); do
-    echo "${mymasterarray[i]} ${KUB_CMDS}"
+    echo "${mymasterarray[i]}"
   done
   echo "[proxy]"
   for ((i=0; i < ${NUM_PROXY}; i++)); do
-    echo "${myproxyarray[i]} ${KUB_CMDS}"
+    echo "${myproxyarray[i]}"
   done
   echo "[worker]"
   for ((i=0; i < ${NUM_WORKER}; i++)); do
