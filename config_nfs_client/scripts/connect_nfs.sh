@@ -130,8 +130,8 @@ for ((i=0; i < ${NUM_FOLDERS}; i++)); do
     echo "${myfolderarray[i]} doesn't exist, creating..."
     mkdir -p ${myfolderarray[i]}
   fi
-
-  mount --bind ${myfolderarray[i]} $MOUNT_POINT/$last_folder
-  echo "${myfolderarray[i]} $MOUNT_POINT/$last_folder  none bind 0 0" >> /etc/fstab
+  ln -s $MOUNT_POINT/$last_folder ${myfolderarray[i]}
+  #mount --bind ${myfolderarray[i]} $MOUNT_POINT/$last_folder
+  #echo "${myfolderarray[i]} $MOUNT_POINT/$last_folder  none bind 0 0" >> /etc/fstab
 
 done
