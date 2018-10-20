@@ -31,8 +31,8 @@ resource "null_resource" "create_nfs_client" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/connect_nfs.sh",
-      "echo '/tmp/connect_nfs.sh $@' /tmp/connect_nfs.sh -s ${var.nfs_server[0]} -f ${var.nfs_folder} -m ${var.nfs_mount_point} -l ${var.nfs_link_folders}",
-      "bash -c '/tmp/connect_nfs.sh $@' /tmp/connect_nfs.sh -s ${var.nfs_server[0]} -f ${var.nfs_folder} -m ${var.nfs_mount_point} -l ${var.nfs_link_folders}",
+      "echo '/tmp/connect_nfs.sh $@' /tmp/connect_nfs.sh -s ${var.nfs_server[0]} -f ${var.nfs_folder} -l ${var.nfs_link_folders}",
+      "bash -c '/tmp/connect_nfs.sh $@' /tmp/connect_nfs.sh -s ${var.nfs_server[0]} -f ${var.nfs_folder} -l ${var.nfs_link_folders}",
     ]
   }
 }

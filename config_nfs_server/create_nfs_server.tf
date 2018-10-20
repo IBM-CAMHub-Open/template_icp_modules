@@ -30,7 +30,7 @@ resource "null_resource" "create_nfs_server" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/setup_nfs.sh",
-      "bash -c '/tmp/setup_nfs.sh $@' /tmp/setup_nfs.sh ${var.nfs_drive}"
+      "bash -c '/tmp/setup_nfs.sh $@' /tmp/setup_nfs.sh -d ${var.nfs_drive} -l ${var.nfs_link_folders}"
     ]
   }
 }

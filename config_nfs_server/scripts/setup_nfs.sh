@@ -1,5 +1,13 @@
 #!/bin/bash
 
+while test $# -gt 0; do
+  [[ $1 =~ ^-d|--drive ]]     && { DRIVE="${2}"; shift 2; continue; };
+  [[ $1 =~ ^-l|--dynamic ]]   && { FOLDERS="${2}"; shift 2; continue; };
+  break;
+done
+
+IFS=',' read -a myfolderarray <<< "${FOLDERS}"
+
 function wait_apt_lock()
 {
     sleepC=5
@@ -17,8 +25,6 @@ function wait_apt_lock()
     done
 }
 
-
-DRIVE=$1
 MOUNT_POINT="/var/nfs"
 # format and mount a drive to /mnt
 echo "Formatting drive $DRIVE"
@@ -36,6 +42,16 @@ wait_apt_lock
 sudo apt-get update -y
 wait_apt_lock
 sudo apt-get install -y nfs-kernel-server
-echo "$MOUNT_POINT/audit  *(rw,sync,no_subtree_check,no_root_squash)" | tee -a /etc/exports
-echo "$MOUNT_POINT/registry  *(rw,sync,no_subtree_check,no_root_squash)" | tee -a /etc/exports
+
+echo "Creating mount points"
+export NUM_FOLDERS=${#myfolderarray[@]}
+
+for ((i=0; i < ${NUM_FOLDERS}; i++)); do
+  last_folder=`echo ${myfolderarray[i]} | awk -F/ '{print $NF}'`
+  if [ ! -d "$MOUNT_POINT/$last_folder" ]; then
+    echo "$MOUNT_POINT/$last_folder doesn't exist, creating..."
+    mkdir -p $MOUNT_POINT/$last_folder
+  fi
+  echo "$MOUNT_POINT/$last_folder  *(rw,sync,no_subtree_check,no_root_squash)" | tee -a /etc/exports
+done
 sudo systemctl restart nfs-kernel-server

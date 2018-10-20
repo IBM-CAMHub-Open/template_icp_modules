@@ -32,18 +32,6 @@ variable "nfs_folder" {
   description = "Path on the NFS server to mount"
 }
 
-variable "nfs_mount_point" {
-  type        = "string"
-  default     = "/nfs"
-  description = "Path on the client where the NFS server should be mounted"
-}
-
-variable "nfs_link_folders" {
-  type        = "string"
-  default     = "/var/lib/registry,/var/lib/icp/audit"
-  description = "Directories to be mounted and dynamic linked to the NFS Share"
-}
-
 variable "enable_nfs" {
   type        = "string"
   default     = "true"

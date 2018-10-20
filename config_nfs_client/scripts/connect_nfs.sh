@@ -4,7 +4,6 @@ set -x
 while test $# -gt 0; do
   [[ $1 =~ ^-s|--nfsserver ]] && { NFS_SERVER="${2}"; shift 2; continue; };
   [[ $1 =~ ^-f|--nfsfolder ]] && { NFS_FOLDER="${2}"; shift 2; continue; };
-  [[ $1 =~ ^-m|--nfsmount ]]  && { MOUNT_POINT="${2}"; shift 2; continue; };
   [[ $1 =~ ^-l|--dynamic ]]   && { FOLDERS="${2}"; shift 2; continue; };
   break;
 done
@@ -13,7 +12,6 @@ IFS=',' read -a myfolderarray <<< "${FOLDERS}"
 
 # NFS_SERVER=$1
 # NFS_FOLDER=$2
-# MOUNT_POINT=$3
 # Check if a command exists
 function command_exists() {
   type "$1" &> /dev/null;
@@ -86,9 +84,9 @@ for ((i=0; i < ${NUM_FOLDERS}; i++)); do
   
   # Create mount point
   echo "Creating mount point: ${myfolderarray[i]}"
-  sudo mkdir -p $MOUNT_POINT
+  sudo mkdir -p ${myfolderarray[i]}
   if [ $? != 0 ]; then
-    echo "[ERROR] There was an error creating the mount point folder: '$MOUNT_POINT'"
+    echo "[ERROR] There was an error creating the mount point folder: '${myfolderarray[i]}'"
     exit 1
   fi
   sed -i '/^192.1./d' /etc/fstab
@@ -116,7 +114,4 @@ for ((i=0; i < ${NUM_FOLDERS}; i++)); do
     exit 1
   fi
   
- # mount --bind ${myfolderarray[i]} $MOUNT_POINT/$last_folder
- # echo "${myfolderarray[i]} $MOUNT_POINT/$last_folder  none bind 0 0" >> /etc/fstab
-
 done
