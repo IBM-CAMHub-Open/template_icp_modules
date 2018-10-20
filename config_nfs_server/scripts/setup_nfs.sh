@@ -36,5 +36,6 @@ wait_apt_lock
 sudo apt-get update -y
 wait_apt_lock
 sudo apt-get install -y nfs-kernel-server
-echo "$MOUNT_POINT  *(rw,sync,no_subtree_check,no_root_squash)" | tee -a /etc/exports
+echo "$MOUNT_POINT/audit  *(rw,sync,no_subtree_check,no_root_squash)" | tee -a /etc/exports
+echo "$MOUNT_POINT/registry  *(rw,sync,no_subtree_check,no_root_squash)" | tee -a /etc/exports
 sudo systemctl restart nfs-kernel-server

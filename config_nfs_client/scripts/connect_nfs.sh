@@ -72,67 +72,51 @@ check_command_and_install nfs-common nfs-common nfs-common
 # sudo apt-get update -y
 # sudo apt-get install -y nfs-common
 
-
-
-# Create mount point
-echo "Creating mount point: $MOUNT_POINT"
-sudo mkdir -p $MOUNT_POINT
-if [ $? != 0 ]; then
-  echo "[ERROR] There was an error creating the mount point folder: '$MOUNT_POINT'"
-  exit 1
-fi
-sed -i '/^192.1./d' /etc/fstab
-echo "Adding NFS server to fstab"
-echo "$NFS_SERVER:$NFS_FOLDER $MOUNT_POINT  nfs rsize=1048576,hard,timeo=600,retrans=2,rw 0 0" >> /etc/fstab
-echo "Mounting NFS Server"
-mount $NFS_SERVER:$NFS_FOLDER $MOUNT_POINT
-if [ $? != 0 ]; then
-  echo "[ERROR] There was an error mounting the NFS server: '$NFS_SERVER'"
-  exit 1
-fi
-mount -alias
-if [ $? != 0 ]; then
-  echo "[ERROR] There was an error mounting the NFS server: '$NFS_SERVER'"
-  exit 1
-fi
-sleep 15
-echo "Testing NFS Server"
-touch $MOUNT_POINT/nfs_test > /dev/null
-if [ $? == 0 ]; then
-  echo "NFS Server mounted successfully"
-  rm -rf $MOUNT_POINT/nfs_test
-else
-  echo "There was an error mounting the NFS server"
-  exit 1
-fi
-echo "Creating ICP folders"
-
-# Create mount point
-echo "Creating mount point: $MOUNT_POINT"
-sudo mkdir -p $MOUNT_POINT
-if [ $? != 0 ]; then
-  echo "[ERROR] There was an error creating the mount point folder: '$MOUNT_POINT'"
-  exit 1
-fi
-
-echo "Creating ICP folders"
+echo "Creating mount points"
 export NUM_FOLDERS=${#myfolderarray[@]}
 
 for ((i=0; i < ${NUM_FOLDERS}; i++)); do
   last_folder=`echo ${myfolderarray[i]} | awk -F/ '{print $NF}'`
   other_folder=`echo ${myfolderarray[i]} | rev | cut -d"/" -f2-  | rev`
-  echo $last_folder
-  if [ ! -d "$MOUNT_POINT/$last_folder" ]; then
-    echo "$MOUNT_POINT/$last_folder doesn't exist, creating..."
-    mkdir -p "$MOUNT_POINT/$last_folder"
-  fi
   if [ ! -d "${myfolderarray[i]}" ]; then
     echo "${myfolderarray[i]} doesn't exist, creating..."
-    ln -s $MOUNT_POINT/$last_folder ${myfolderarray[i]}
-  #  mkdir -p ${myfolderarray[i]}
+    mkdir -p ${myfolderarray[i]}
   fi
-  #ln -s $MOUNT_POINT/$last_folder ${myfolderarray[i]}
-  #mount --bind ${myfolderarray[i]} $MOUNT_POINT/$last_folder
-  #echo "${myfolderarray[i]} $MOUNT_POINT/$last_folder  none bind 0 0" >> /etc/fstab
+  
+  
+  # Create mount point
+  echo "Creating mount point: ${myfolderarray[i]}"
+  sudo mkdir -p $MOUNT_POINT
+  if [ $? != 0 ]; then
+    echo "[ERROR] There was an error creating the mount point folder: '$MOUNT_POINT'"
+    exit 1
+  fi
+  sed -i '/^192.1./d' /etc/fstab
+  echo "Adding NFS server to fstab"
+  echo "$NFS_SERVER:$NFS_FOLDER/$last_folder ${myfolderarray[i]}  nfs rsize=1048576,hard,timeo=600,retrans=2,rw 0 0" >> /etc/fstab
+  echo "Mounting NFS Server"
+  mount $NFS_SERVER:$NFS_FOLDER/$last_folder ${myfolderarray[i]}
+  if [ $? != 0 ]; then
+    echo "[ERROR] There was an error mounting the NFS server: '$NFS_SERVER'"
+    exit 1
+  fi
+  mount -alias
+  if [ $? != 0 ]; then
+    echo "[ERROR] There was an error mounting the NFS server: '$NFS_SERVER'"
+    exit 1
+  fi
+  sleep 15
+  echo "Testing NFS Server"
+  touch ${myfolderarray[i]}/nfs_test > /dev/null
+  if [ $? == 0 ]; then
+    echo "NFS Server mounted successfully"
+    rm -rf ${myfolderarray[i]}/nfs_test
+  else
+    echo "There was an error mounting the NFS server"
+    exit 1
+  fi
+  
+ # mount --bind ${myfolderarray[i]} $MOUNT_POINT/$last_folder
+ # echo "${myfolderarray[i]} $MOUNT_POINT/$last_folder  none bind 0 0" >> /etc/fstab
 
 done
