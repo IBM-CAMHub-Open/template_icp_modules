@@ -13,7 +13,7 @@ resource "vsphere_virtual_machine" "vm" {
 
   clone {
     template_uuid = "${data.vsphere_virtual_machine.vm_template.id}"
-
+    timeout = "${var.vm_clone_timeout}"
     customize {
       linux_options {
         domain    = "${var.vm_domain}"
@@ -161,7 +161,8 @@ resource "vsphere_virtual_machine" "vm2disk" {
 
   clone {
     template_uuid = "${data.vsphere_virtual_machine.vm_template.id}"
-
+    timeout = "${var.vm_clone_timeout}"
+    
     customize {
       linux_options {
         domain    = "${var.vm_domain}"

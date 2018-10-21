@@ -150,6 +150,11 @@ variable "vm_disk2_datastore" {
   description = "Data store or storage cluster name for target virtual machine's disks"
 }
 
+variable "vm_clone_timeout" {
+  description = "The timeout, in minutes, to wait for the virtual machine clone to complete."
+  default = "30"
+}
+
 variable "random" {
   type = "string"
 
