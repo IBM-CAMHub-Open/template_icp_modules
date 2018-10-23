@@ -56,8 +56,8 @@ resource "null_resource" "load_device_script" {
   }
 
   provisioner "file" {
-    source      = "${path.module}/scripts/get-device-path.sh"
-    destination = "/tmp/get-device-path.sh"
+    source      = "${path.module}/scripts/interpolate_device_symlink.sh"
+    destination = "/tmp/interpolate_device_symlink.sh"
   }
 
   provisioner "file" {
@@ -67,7 +67,7 @@ resource "null_resource" "load_device_script" {
 
   provisioner "remote-exec" {
     inline = [
-      "chmod 755 /tmp/get-device-path.sh",
+      "chmod 755 /tmp/interpolate_device_symlink.sh",
       "/tmp/interpolate_device_symlink.sh",
       "apt-get install sshpass",
       "ssh-keyscan ${var.boot_vm_ipv4_address} >> ~/.ssh/known_hosts",
