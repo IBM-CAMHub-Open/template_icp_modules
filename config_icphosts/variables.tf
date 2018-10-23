@@ -52,3 +52,5 @@ variable "enable_vm_management" {
 
   description = "Random String Generated"
 }
+
+variable "enable_glusterFS"     { type = "string" description = "Enable GlusterFS on Worker nodes?"}

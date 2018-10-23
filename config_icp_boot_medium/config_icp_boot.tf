@@ -47,7 +47,7 @@ resource "null_resource" "setup_installer" {
       "cat /root/glusterfs.txt >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"kibana_install: ${var.enable_kibana}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"metering_enabled: ${var.enable_metering}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-
+      "if [ ${var.enable_glusterFS} == true ]; then sed -i 's/storage-glusterfs.*/storage-glusterfs: enabled/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; else sed -i 's/storage-glusterfs.*/storage-glusterfs: disabled/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; fi",
       #"echo \"cluster_access_ip: ${var.cluster_access_ip}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "sed -i 's/# cluster_name.*/cluster_name: ${var.icp_cluster_name}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
 
@@ -95,7 +95,7 @@ resource "null_resource" "setup_installer_tar" {
       "cat /root/glusterfs.txt >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"kibana_install: ${var.enable_kibana}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"metering_enabled: ${var.enable_metering}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-
+      "if [ ${var.enable_glusterFS} == true ]; then sed -i 's/storage-glusterfs.*/storage-glusterfs: enabled/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; else sed -i 's/storage-glusterfs.*/storage-glusterfs: disabled/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; fi",
       # "echo \"cluster_access_ip: ${var.cluster_access_ip}\" >> /root/${var.icp_version}/cluster/config.yaml",
       "sed -i 's/default_admin_user.*/default_admin_user: ${var.icp_admin_user}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
 

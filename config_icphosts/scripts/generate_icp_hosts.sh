@@ -9,6 +9,7 @@ while test $# -gt 0; do
   [[ $1 =~ ^-p|--proxy$ ]] && { proxyip="$2"; shift 2; continue; };
   [[ $1 =~ ^-w|--worker$ ]] && { workerip="$2"; shift 2; continue; };
   [[ $1 =~ ^-v|--va$ ]] && { vaip="$2"; shift 2; continue; };
+  [[ $1 =~ ^-g|--gpfs$ ]] && { gpfs="$2"; shift 2; continue; };
   [[ $1 =~ ^-n|--management$ ]] && { shift 1; };
   [[ $1 =~ ^- ]] && continue || { managementip="$1"; shift 1; continue; };
     shift
@@ -57,6 +58,13 @@ icp_hosts_txt=$(
     echo '[va]'
     for ((i=0; i < ${NUM_VA}; i++)); do
       echo "${myvaarray[i]}" 
+    done
+  fi
+  if [ ${gpfs} == true ]
+  then
+    echo "[hostgroup-glusterfs]"
+    for ((i=0; i < ${NUM_WORKER}; i++)); do
+      echo "${myworkerarray[i]}"
     done
   fi
 )

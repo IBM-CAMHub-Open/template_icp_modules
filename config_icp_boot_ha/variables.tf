@@ -7,6 +7,7 @@ variable "dependsOn"            { default = "true"  description = "Boolean for d
 variable "enable_ha"            { type="string" default = "true" description = "Enable IBM Cloud Private HA"}
 variable "enable_kibana"        { type="string" description = "Enable IBM Cloud Private Kibana"}
 variable "enable_bluemix_install"        { type="string" default = "false" description = "Enable install from bluemix repository"}
+variable "enable_glusterFS"     { type = "string" description = "Enable GlusterFS on Worker nodes?"}
 variable "bluemix_token"   		{ type="string" description = "Bluemix token"}
 variable "enable_metering"      { type="string" description = "Enable IBM Cloud Private Metering"}
 variable "cluster_vip"          { type="string" description = "IBM Cloud Private Cluster Name"}

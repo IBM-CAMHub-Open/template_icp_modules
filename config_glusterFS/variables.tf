@@ -8,3 +8,4 @@ variable "vm_os_user"           { type = "string" description = "Operating Syste
 variable "private_key"          { type = "string" description ="Private SSH key Details to the Virtual machine"}
 variable "boot_vm_ipv4_address" { type = "string" description ="IPv4 Addressof the Management Node"}
 variable "gluster_volumetype_none"   { type = "string" default = "false"}
+variable "icp_version"              {type = "string" description = "IBM Cloud Private Version"}
