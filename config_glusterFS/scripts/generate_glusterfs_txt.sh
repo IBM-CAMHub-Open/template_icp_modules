@@ -19,7 +19,7 @@ echo "$NUM_GLUSTER_BRICKS"
 # done
 # Create Endpoint Based on Gluster Cluster IPs
 
-if [[ $3 == "2.1.*" ]] ; then
+if [[ $1 == 2.1.* ]] ; then
   glusterfs_txt=$(
     echo "glusterfs: true"
     echo "storage:"
@@ -33,7 +33,7 @@ if [[ $3 == "2.1.*" ]] ; then
     echo "      default: true"
     echo "      name: glusterfs-storage"
   )
-  echo "${glusterfs_txt}" > /tmp/$1/glusterfs.txt
+  echo "${glusterfs_txt}" > /tmp/$2/glusterfs.txt
 else
   glusterfs_txt=$(
     echo "no_taint_group: [\"hostgroup-glusterfs\"]"
@@ -82,5 +82,5 @@ else
     echo "    podPriorityClass: \"system-cluster-critical\""
     echo "    tolerations: []"
   )
-  echo "${glusterfs_txt}" > /tmp/$1/glusterfs.txt
+  echo "${glusterfs_txt}" > /tmp/$2/glusterfs.txt
 fi
