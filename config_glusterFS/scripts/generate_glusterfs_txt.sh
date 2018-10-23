@@ -68,7 +68,7 @@ else
     echo "      resources:"
     echo "        requests:"
     echo "          cpu: 500m"
-    echo "          memory: 512i"
+    echo "          memory: 512Mi"
     echo "        limits:"
     echo "          cpu: 1000m"
     echo "          memory: 1Gi"

@@ -61,11 +61,6 @@ resource "null_resource" "load_device_script" {
   }
 
   provisioner "file" {
-    source      = "${path.module}/scripts/get-device-path.properties"
-    destination = "/tmp/get-device-path.properties"
-  }
-
-  provisioner "file" {
     source      = "/tmp/${var.random}/glusterfs.txt"
     destination = "/tmp/glusterfs.txt"
   }
@@ -73,10 +68,7 @@ resource "null_resource" "load_device_script" {
   provisioner "remote-exec" {
     inline = [
       "chmod 755 /tmp/get-device-path.sh",
-      "sed -i 's/@@user@@/${var.vm_os_user}/g' /tmp/get-device-path.properties",
-      "sed -i 's/@@host@@/${var.vm_ipv4_address_list[count.index]}/g' /tmp/get-device-path.properties",
-      "/tmp/get-device-path.sh part1 /tmp/get-device-path.properties",
-      "/tmp/get-device-path.sh part2 /tmp/get-device-path.properties",
+      "/tmp/interpolate_device_symlink.sh",
       "apt-get install sshpass",
       "ssh-keyscan ${var.boot_vm_ipv4_address} >> ~/.ssh/known_hosts",
       "sshpass -p ${var.vm_os_password} scp /tmp/glusterfs.txt ${var.boot_vm_ipv4_address}:/root",
