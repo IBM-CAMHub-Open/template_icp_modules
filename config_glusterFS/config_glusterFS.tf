@@ -23,7 +23,7 @@ resource "null_resource" "generate_glusterfs_txt" {
   count      = "${var.enable_glusterFS == "true" ? 1 : 0}"
 
   provisioner "local-exec" {
-    command = "bash -c '/tmp/${var.random}/generate_glusterfs_txt.sh ${var.random} ${var.vm_ipv4_address_str} ${var.icp_version}'"
+    command = "bash -c '/tmp/${var.random}/generate_glusterfs_txt.sh ${var.icp_version} ${var.random} ${var.vm_ipv4_address_str}'"
   }
 }
 

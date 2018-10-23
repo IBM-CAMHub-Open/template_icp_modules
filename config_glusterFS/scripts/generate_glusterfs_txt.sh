@@ -4,9 +4,9 @@ set -e
 
 
 echo "Arg1 : $1"
-echo "Arg2 : ${*:2}"
-echo "Arg3 : $3"
-IPS=${*:2}
+echo "Arg2 : $2"
+echo "Arg3 : ${*:3}"
+IPS=${*:3}
 export GLUSTER_IPS=(${IPS})
 export NUM_GLUSTER_BRICKS=${#GLUSTER_IPS[@]}
 
