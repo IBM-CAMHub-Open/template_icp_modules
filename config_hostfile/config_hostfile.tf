@@ -27,6 +27,7 @@ resource "null_resource" "generate_hostfile" {
   }
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "cp /etc/hosts /etc/hosts.backup",
       "sed -i 's/127.0.1.1/#127.0.1.1/g' /etc/hosts",
       "export myhost=`hostname` && sed -i \"/$myhost/d\" /etc/hosts",

@@ -26,6 +26,7 @@ resource "null_resource" "setup_installer" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "mkdir -p /root/ibm-cloud-private-x86_64-${var.icp_version}",
       "cd /root/ibm-cloud-private-x86_64-${var.icp_version}",
       "sudo docker login -u token -p ${var.bluemix_token} registry.ng.bluemix.net",
@@ -43,6 +44,7 @@ resource "null_resource" "setup_installer" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "echo \"version: ${var.icp_version}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "cat /root/glusterfs.txt >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"kibana_install: ${var.enable_kibana}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
@@ -62,7 +64,7 @@ resource "null_resource" "setup_installer" {
       "cd  /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
       "sudo docker login -u token -p ${var.bluemix_token} registry.ng.bluemix.net",
       "export DOCKER_REPO=`docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`",
-      "sudo docker run --net=host -t -e LICENSE=accept  -v $(pwd):/installer/cluster ${DOCKER_REPO}:${var.icp_version} install | tee /tmp/installlog",
+      "bash -c 'sudo docker run --net=host -t -e LICENSE=accept  -v $(pwd):/installer/cluster ${DOCKER_REPO}:${var.icp_version} install | tee /tmp/installlog; test $${PIPESTATUS[0]} -eq 0'",
     ]
   }
 }
@@ -94,6 +96,7 @@ resource "null_resource" "setup_installer_tar" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "echo \"version: ${var.icp_version}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "cat /root/glusterfs.txt >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"kibana_install: ${var.enable_kibana}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
@@ -108,7 +111,7 @@ resource "null_resource" "setup_installer_tar" {
       "sed -i 's/# proxy_vip.*/proxy_vip: ${var.proxy_vip}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "cd /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
       "export DOCKER_REPO=`docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`",
-      "sudo docker run --net=host -t -e LICENSE=accept  -v $(pwd):/installer/cluster $DOCKER_REPO:${var.icp_version}-ee install | sudo tee -a /root/cfc-install.log",
+      "bash -c 'sudo docker run --net=host -t -e LICENSE=accept  -v $(pwd):/installer/cluster $DOCKER_REPO:${var.icp_version}-ee install | sudo tee -a /root/cfc-install.log; test $${PIPESTATUS[0]} -eq 0'",
     ]
   }
 }

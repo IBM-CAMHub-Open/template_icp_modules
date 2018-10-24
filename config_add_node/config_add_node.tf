@@ -34,6 +34,7 @@ resource "null_resource" "addNode" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "chmod 755 /tmp/add_public_key.sh",
       "/tmp/add_public_key.sh ${join(",", var.new_node_IPs)} ${var.vm_os_user} ${var.vm_os_password}",
       "cp /root/.ssh/id_rsa /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/ssh_key",
@@ -48,6 +49,7 @@ resource "null_resource" "addNode" {
   provisioner "remote-exec" {
     when                  = "destroy"
     inline                = [
+      "set -e",
       "cd ${var.cluster_location}",
       "export DOCKER_REPO=`docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`",
       "docker run -e LICENSE=accept --net=host -v $(pwd):/installer/cluster $DOCKER_REPO:${var.icp_version}-ee uninstall -l ${join(",", var.new_node_IPs)} && printf \"\\033[32m[*] Remove Node Succeeded \\033[0m\\n\" || (printf \"\\033[31m[ERROR] Remove Node Failed\\033[0m\\n\" && exit 1)",

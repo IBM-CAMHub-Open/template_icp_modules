@@ -42,7 +42,8 @@ else
     echo "    nodes:"
     for ((i=0; i < $NUM_GLUSTER_BRICKS; i++)); do
       echo "      - ip: ${GLUSTER_IPS[i]}"
-      echo "        device: @@glusterfs@@"
+      echo "        devices:"
+      echo "          - @@glusterfs@@"
     done
     echo "    storageClass:"
     echo "      create: true"

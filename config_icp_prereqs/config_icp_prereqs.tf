@@ -27,6 +27,7 @@ resource "null_resource" "install_python" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "chmod 755 /var/tmp/python_install.sh",
       "echo /var/tmp/python_install.sh",
       "bash -c '/var/tmp/python_install.sh'"
@@ -59,6 +60,7 @@ resource "null_resource" "install_system_settings" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "chmod 755 /var/tmp/system_settings.sh",
       "echo /var/tmp/system_settings.sh",
       "bash -c '/var/tmp/system_settings.sh'"

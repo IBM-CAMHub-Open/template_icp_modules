@@ -53,6 +53,7 @@ resource "null_resource" "install_docker" {
     
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "chmod 755 /root/ibm-cloud-private-x86_64-${var.icp_version}/docker_install.sh",
       "echo /root/ibm-cloud-private-x86_64-${var.icp_version}/docker_install.sh -d ${var.docker_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}",
       "bash -c '/root/ibm-cloud-private-x86_64-${var.icp_version}/docker_install.sh -d ${var.docker_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}'"
@@ -86,6 +87,7 @@ resource "null_resource" "load_icp_images" {
   
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "chmod 755 /root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh",
       "echo /root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}",
       "bash -c '/root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}'"

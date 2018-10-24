@@ -37,6 +37,7 @@ resource "null_resource" "mkdir-boot-node" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "[ ${var.icp_version} != \"2.1.0.3-fp1\" ] && rm -rf /root/ibm-cloud-private-x86_64-${var.icp_version} || :",
       "[ ${var.icp_version} != \"2.1.0.3-fp1\" ] && mkdir -p /root/ibm-cloud-private-x86_64-${var.icp_version} || :"
     ]
@@ -62,6 +63,7 @@ resource "null_resource" "load_icp_images" {
   
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "chmod 755 /tmp/download_icp.sh",
       "echo /tmp/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}",
       "bash -c '/tmp/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}'"
@@ -87,6 +89,7 @@ resource "null_resource" "icp_upgrade" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "[ ${var.icp_version} != \"2.1.0.3-fp1\" ] && cd /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster || cd /root/ibm-cloud-private-x86_64-2.1.0.3/cluster",
       "chmod 755 /tmp/upgrade_icp.sh",
       "echo /tmp/upgrade_icp.sh ${var.icp_version} ${var.cluster_location}",
@@ -97,6 +100,7 @@ resource "null_resource" "icp_upgrade" {
   provisioner "remote-exec" {
     when                  = "destroy"
     inline                = [
+      "set -e",
       "[ ${var.icp_version} != \"2.1.0.3-fp1\" ] && cd /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster || cd /root/ibm-cloud-private-x86_64-2.1.0.3/cluster",
       "chmod 755 /tmp/rollback_icp.sh",
       "echo /tmp/rollback_icp.sh ${var.icp_version} ${var.icp_cluster_name} ${var.kube_apiserver_secure_port} ${var.master_node_ip}",

@@ -67,6 +67,7 @@ resource "null_resource" "load_device_script" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "chmod 755 /tmp/interpolate_device_symlink.sh",
       "/tmp/interpolate_device_symlink.sh",
       "apt-get install sshpass",
@@ -102,6 +103,7 @@ resource "null_resource" "load_gluster_prereqs" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "chmod 755 /tmp/worker_prereqs.sh",
       "/tmp/worker_prereqs.sh",
     ]

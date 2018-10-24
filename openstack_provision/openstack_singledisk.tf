@@ -125,6 +125,7 @@ EOF
   # Execute the script remotely
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "bash -c 'hostnamectl set-hostname \"${var.vm_name[count.index]}\"'",
       "bash -c 'chmod +x VM_add_ssh_key.sh'",
       "bash -c './VM_add_ssh_key.sh  \"${var.vm_os_user}\" \"${var.vm_public_ssh_key}\" \"${var.vm_private_ssh_key}\">> VM_add_ssh_key.log 2>&1'",
@@ -267,6 +268,7 @@ EOF
   # Execute the script remotely
   provisioner "remote-exec" {
     inline = [
+      "set -e",
       "bash -c 'hostnamectl set-hostname \"${var.vm_name[count.index]}\"'",
       "bash -c 'chmod +x VM_add_ssh_key.sh'",
       "bash -c './VM_add_ssh_key.sh  \"${var.vm_os_user}\" \"${var.vm_public_ssh_key}\" \"${var.vm_private_ssh_key}\">> VM_add_ssh_key.log 2>&1'",
