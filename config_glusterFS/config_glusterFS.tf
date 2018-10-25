@@ -23,18 +23,10 @@ resource "null_resource" "generate_glusterfs_txt" {
   count      = "${var.enable_glusterFS == "true" ? 1 : 0}"
 
   provisioner "local-exec" {
-    command = "bash -c '/tmp/${var.random}/generate_glusterfs_txt.sh ${var.icp_version} ${var.random} ${var.vm_ipv4_address_str}'"
+    command = "bash -c '/tmp/${var.random}/generate_glusterfs_txt.sh ${var.gluster_volumetype_none} ${var.icp_version} ${var.random} ${var.vm_ipv4_address_str}'"
   }
 }
 
-resource "null_resource" "add_volumetype_none" {
-  depends_on = ["null_resource.generate_glusterfs_txt"]
-  count      = "${var.enable_glusterFS == "true" && var.gluster_volumetype_none == "true" ? 1 : 0}"
-
-  provisioner "local-exec" {
-    command = "${format("echo '      volumetype: none' >> /tmp/${var.random}/glusterfs.txt")}"
-  }
-}
 
 resource "null_resource" "load_device_script" {
   depends_on = ["null_resource.add_volumetype_none", "null_resource.generate_glusterfs_txt"]
