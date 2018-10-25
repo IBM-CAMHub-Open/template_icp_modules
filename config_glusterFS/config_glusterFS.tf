@@ -27,9 +27,8 @@ resource "null_resource" "generate_glusterfs_txt" {
   }
 }
 
-
 resource "null_resource" "load_device_script" {
-  depends_on = ["null_resource.add_volumetype_none", "null_resource.generate_glusterfs_txt"]
+  depends_on = ["null_resource.generate_glusterfs_txt"]
   count      = "${var.enable_glusterFS == "true" ? length(var.vm_ipv4_address_list) : 0}"
 
   #  count = "${length(var.vm_ipv4_address_list)}"
@@ -70,7 +69,7 @@ resource "null_resource" "load_device_script" {
 }
 
 resource "null_resource" "load_gluster_prereqs" {
-  depends_on = ["null_resource.generate_glusterfs_txt", "null_resource.load_device_script", "null_resource.add_volumetype_none"]
+  depends_on = ["null_resource.generate_glusterfs_txt", "null_resource.load_device_script"]
   count      = "${var.enable_glusterFS == "true" ? length(var.vm_ipv4_address_list) : 0}"
 
   #  count = "${length(var.vm_ipv4_address_list)}"
@@ -103,7 +102,7 @@ resource "null_resource" "load_gluster_prereqs" {
 }
 
 resource "null_resource" "post_populate_glusterfs_end" {
-  depends_on = ["null_resource.add_volumetype_none", "null_resource.load_gluster_prereqs", "null_resource.config_glusterfs_dependsOn", "null_resource.load_device_script", "local_file.generate_glusterfs_txt", "null_resource.generate_glusterfs_txt"]
+  depends_on = ["null_resource.load_gluster_prereqs", "null_resource.config_glusterfs_dependsOn", "null_resource.load_device_script", "local_file.generate_glusterfs_txt", "null_resource.generate_glusterfs_txt"]
 
   provisioner "local-exec" {
     command = "${format("echo 'the end of gluster FS' ")}"
