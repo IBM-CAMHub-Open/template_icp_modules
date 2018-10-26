@@ -46,11 +46,11 @@ resource "null_resource" "setup_installer" {
     inline = [
       "set -e",
       "echo \"version: ${var.icp_version}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
+      "echo \"cluster_lb_address: ${var.cluster_lb_address}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
+      "echo \"proxy_lb_address: ${var.proxy_lb_address}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",      
       "if [ \"${var.enable_glusterFS}\" = \"true\" ]; then cat /root/glusterfs.txt >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; fi",
       "echo \"kibana_install: ${var.enable_kibana}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"metering_enabled: ${var.enable_metering}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-      "echo \"cluster_lb_address: ${var.cluster_lb_address}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-      "echo \"proxy_lb_address: ${var.proxy_lb_address}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "if [ \"${var.enable_glusterFS}\" = \"true\" ]; then sed -i 's/storage-glusterfs: disabled/storage-glusterfs: enabled/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; fi",
       #"echo \"cluster_access_ip: ${var.cluster_access_ip}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "sed -i 's/# cluster_name.*/cluster_name: ${var.icp_cluster_name}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
@@ -96,6 +96,8 @@ resource "null_resource" "setup_installer_tar" {
     inline = [
       "set -e",
       "echo \"version: ${var.icp_version}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
+      "echo \"cluster_lb_address: ${var.cluster_lb_address}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
+      "echo \"proxy_lb_address: ${var.proxy_lb_address}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",    
       "if [ \"${var.enable_glusterFS}\" = \"true\" ]; then cat /root/glusterfs.txt >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; fi",
       "echo \"kibana_install: ${var.enable_kibana}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"metering_enabled: ${var.enable_metering}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
