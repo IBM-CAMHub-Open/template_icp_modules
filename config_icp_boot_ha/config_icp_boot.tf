@@ -46,7 +46,7 @@ resource "null_resource" "setup_installer" {
     inline = [
       "set -e",
       "echo \"version: ${var.icp_version}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-      "cat /root/glusterfs.txt >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
+      "if [ \"${var.enable_glusterFS}\" = \"true\" ]; then cat /root/glusterfs.txt >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; fi",
       "echo \"kibana_install: ${var.enable_kibana}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"metering_enabled: ${var.enable_metering}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "if [ \"${var.enable_glusterFS}\" = \"true\" ]; then sed -i 's/storage-glusterfs: disabled/storage-glusterfs: enabled/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; fi",
@@ -98,7 +98,7 @@ resource "null_resource" "setup_installer_tar" {
     inline = [
       "set -e",
       "echo \"version: ${var.icp_version}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-      "cat /root/glusterfs.txt >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
+      "if [ \"${var.enable_glusterFS}\" = \"true\" ]; then cat /root/glusterfs.txt >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; fi",
       "echo \"kibana_install: ${var.enable_kibana}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"metering_enabled: ${var.enable_metering}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "if [ \"${var.enable_glusterFS}\" = \"true\" ]; then sed -i 's/storage-glusterfs: disabled/storage-glusterfs: enabled/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; fi",
