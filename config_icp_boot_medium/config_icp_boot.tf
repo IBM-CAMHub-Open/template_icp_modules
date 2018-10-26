@@ -49,10 +49,11 @@ resource "null_resource" "setup_installer" {
       "if [ \"${var.enable_glusterFS}\" = \"true\" ]; then cat /root/glusterfs.txt >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; fi",
       "echo \"kibana_install: ${var.enable_kibana}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"metering_enabled: ${var.enable_metering}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
+      "echo \"cluster_lb_address: ${var.cluster_lb_address}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
+      "echo \"proxy_lb_address: ${var.proxy_lb_address}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "if [ \"${var.enable_glusterFS}\" = \"true\" ]; then sed -i 's/storage-glusterfs: disabled/storage-glusterfs: enabled/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; fi",
       #"echo \"cluster_access_ip: ${var.cluster_access_ip}\" >> /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "sed -i 's/# cluster_name.*/cluster_name: ${var.icp_cluster_name}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-
       "sed -i 's/# cluster_CA_domain.*/cluster_CA_domain: ${var.icp_cluster_name}.${var.vm_domain}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "sed -i 's/default_admin_user.*/default_admin_user: ${var.icp_admin_user}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "sed -i 's/default_admin_password.*/default_admin_password: ${var.icp_admin_password}/g' /root/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",

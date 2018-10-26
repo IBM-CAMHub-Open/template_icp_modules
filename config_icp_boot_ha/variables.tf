@@ -21,3 +21,15 @@ variable "vm_domain"            { type="string" description = "IBM Cloud Private
 variable "icp_admin_user"       { type="string" description = "IBM Cloud Private Admin Username"}
 variable "icp_admin_password"   { type="string" description = "IBM Cloud Private Admin Password"}
 variable "gluster_volumetype" 	{ type="string" description = "Gluster durability" default = "volumetype: none" }
+
+variable "cluster_lb_address" {
+  type = "string"
+  default = "none"
+  description = "IP Address of the Cluster Load Balancer"
+}
+
+variable "proxy_lb_address" {
+  type = "string"
+  default = "none"
+  description = "IP Address of the Proxy Load Balancer"
+}

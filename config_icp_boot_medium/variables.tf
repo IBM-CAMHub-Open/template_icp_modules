@@ -79,4 +79,16 @@ variable "icp_admin_password" {
   description = "IBM Cloud Private Admin Password"
 }
 
+variable "cluster_lb_address" {
+  type = "string"
+  default = "none"
+  description = "IP Address of the Cluster Load Balancer"
+}
+
+variable "proxy_lb_address" {
+  type = "string"
+  default = "none"
+  description = "IP Address of the Proxy Load Balancer"
+}
+
 variable "enable_glusterFS"     { type = "string" description = "Enable GlusterFS on Worker nodes?"}
