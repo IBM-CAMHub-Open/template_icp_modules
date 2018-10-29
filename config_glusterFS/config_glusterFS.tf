@@ -61,9 +61,9 @@ resource "null_resource" "load_device_script" {
       "set -e",
       "chmod 755 /tmp/interpolate_device_symlink.sh",
       "/tmp/interpolate_device_symlink.sh",
-      "apt-get install sshpass",
-      "ssh-keyscan ${var.boot_vm_ipv4_address} >> ~/.ssh/known_hosts",
-      "sshpass -p ${var.vm_os_password} scp /tmp/glusterfs.txt ${var.boot_vm_ipv4_address}:/root",
+      "sudo apt-get install sshpass",
+      "ssh-keyscan ${var.boot_vm_ipv4_address} | sudo tee -a  ~/.ssh/known_hosts",
+      "sshpass -p ${var.vm_os_password} scp /tmp/glusterfs.txt ${var.boot_vm_ipv4_address}:~/",
     ]
   }
 }

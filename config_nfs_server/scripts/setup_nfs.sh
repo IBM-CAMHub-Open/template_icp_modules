@@ -28,15 +28,15 @@ function wait_apt_lock()
 MOUNT_POINT="/var/nfs"
 # format and mount a drive to /mnt
 echo "Formatting drive $DRIVE"
-mkfs -t ext3 $DRIVE
+sudo mkfs -t ext3 $DRIVE
 echo "Creating folder for mount point: $MOUNT_POINT"
-mkdir -p $MOUNT_POINT
+sudo mkdir -p $MOUNT_POINT
 echo "Adding $DRIVE to /etc/fstab"
-echo "$DRIVE  $MOUNT_POINT ext3  defaults 1 3" | tee -a /etc/fstab
+echo "$DRIVE  $MOUNT_POINT ext3  defaults 1 3" |sudo tee -a /etc/fstab
 echo ""
 echo "Setting mount point permissions and mounting"
 sudo chown nobody:nogroup $MOUNT_POINT
-mount $MOUNT_POINT
+sudo mount $MOUNT_POINT
 echo "Installing nfs-kernel-server"
 wait_apt_lock
 sudo apt-get update -y
@@ -50,8 +50,8 @@ for ((i=0; i < ${NUM_FOLDERS}; i++)); do
   last_folder=`echo ${myfolderarray[i]} | awk -F/ '{print $NF}'`
   if [ ! -d "$MOUNT_POINT/$last_folder" ]; then
     echo "$MOUNT_POINT/$last_folder doesn't exist, creating..."
-    mkdir -p $MOUNT_POINT/$last_folder
+    sudo mkdir -p $MOUNT_POINT/$last_folder
   fi
-  echo "$MOUNT_POINT/$last_folder  *(rw,sync,no_subtree_check,no_root_squash)" | tee -a /etc/exports
+  echo "$MOUNT_POINT/$last_folder  *(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
 done
 sudo systemctl restart nfs-kernel-server

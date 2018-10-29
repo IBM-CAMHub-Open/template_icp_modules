@@ -84,7 +84,7 @@ if [ `lsmod | grep dm_thin_pool | wc -l` -gt 0 ];then
 else
   printf "\033[32m%s [CONFIGURING_MODULE]\n\033[0m\n" "dm_thin_pool"
   echo "Commenting out and replacing with ICP setting for - dm_thin_pool"
-  sed -i '/dm_thin_pool/s/^/#/g' /etc/modules
+  sudo sed -i '/dm_thin_pool/s/^/#/g' /etc/modules
   echo dm_thin_pool | sudo tee -a /etc/modules
   sudo modprobe dm_thin_pool
 fi

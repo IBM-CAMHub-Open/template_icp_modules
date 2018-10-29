@@ -23,7 +23,7 @@ resource "null_resource" "mkdir-boot-node" {
   }
     provisioner "remote-exec" {
     inline = [
-      "mkdir -p /root/ibm-cloud-private-x86_64-${var.icp_version}"
+      "mkdir -p ~/ibm-cloud-private-x86_64-${var.icp_version}"
     ]
   }
 }
@@ -48,15 +48,15 @@ resource "null_resource" "install_docker" {
   }
   provisioner "file" {
     source = "${path.module}/scripts/docker_install.sh"
-    destination = "/root/ibm-cloud-private-x86_64-${var.icp_version}/docker_install.sh"
+    destination = "~/ibm-cloud-private-x86_64-${var.icp_version}/docker_install.sh"
   }
     
   provisioner "remote-exec" {
     inline = [
       "set -e",
-      "chmod 755 /root/ibm-cloud-private-x86_64-${var.icp_version}/docker_install.sh",
-      "echo /root/ibm-cloud-private-x86_64-${var.icp_version}/docker_install.sh -d ${var.docker_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}",
-      "bash -c '/root/ibm-cloud-private-x86_64-${var.icp_version}/docker_install.sh -d ${var.docker_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}'"
+      "chmod 755 ~/ibm-cloud-private-x86_64-${var.icp_version}/docker_install.sh",
+      "echo ~/ibm-cloud-private-x86_64-${var.icp_version}/docker_install.sh -d ${var.docker_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password} -o ${var.vm_os_user}",
+      "bash -c '~/ibm-cloud-private-x86_64-${var.icp_version}/docker_install.sh -d ${var.docker_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password} -o ${var.vm_os_user}'"
     ]
   }
 }
@@ -82,18 +82,18 @@ resource "null_resource" "load_icp_images" {
   
   provisioner "file" {
     source = "${path.module}/scripts/download_icp.sh"
-    destination = "/root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh"
+    destination = "~/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh"
   }
   
   provisioner "remote-exec" {
     inline = [
       "set -e",
-      "chmod 755 /root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh",
-      "echo /root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}",
-      "bash -c '/root/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password}'"
+      "chmod 755 ~/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh",
+      "echo ~/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password} -o ${var.vm_os_user}",
+      "bash -c '~/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password} -o ${var.vm_os_user}'"
       # "tar -xf  ibm-cloud-private-x86_64-${var.ICP_Version}.tar.gz -O | sudo docker load",
-      # export DOCKER_REPO=`docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`.
-      # "docker run -v $(pwd):/data -e LICENSE=accept $DOCKER_REPO:${var.ICP_Version}-ee cp -r cluster /data",
+      # export DOCKER_REPO=`sudo docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`.
+      # "sudo docker run -v $(pwd):/data -e LICENSE=accept $DOCKER_REPO:${var.ICP_Version}-ee cp -r cluster /data",
       # "mkdir -p cluster/images; mv ibm-cloud-private-x86_64-${var.ICP_Version}.tar.gz cluster/images/"
     ]
   }

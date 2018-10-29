@@ -78,7 +78,7 @@ for ((i=0; i < ${NUM_FOLDERS}; i++)); do
   other_folder=`echo ${myfolderarray[i]} | rev | cut -d"/" -f2-  | rev`
   if [ ! -d "${myfolderarray[i]}" ]; then
     echo "${myfolderarray[i]} doesn't exist, creating..."
-    mkdir -p ${myfolderarray[i]}
+    sudo mkdir -p ${myfolderarray[i]}
   fi
   
   
@@ -89,26 +89,26 @@ for ((i=0; i < ${NUM_FOLDERS}; i++)); do
     echo "[ERROR] There was an error creating the mount point folder: '${myfolderarray[i]}'"
     exit 1
   fi
-  sed -i '/^192.1./d' /etc/fstab
+  sudo sed -i '/^192.1./d' /etc/fstab
   echo "Adding NFS server to fstab"
-  echo "$NFS_SERVER:$NFS_FOLDER/$last_folder ${myfolderarray[i]}  nfs rsize=1048576,hard,timeo=600,retrans=2,rw 0 0" >> /etc/fstab
+  echo "$NFS_SERVER:$NFS_FOLDER/$last_folder ${myfolderarray[i]}  nfs rsize=1048576,hard,timeo=600,retrans=2,rw 0 0" | sudo tee -a /etc/fstab
   echo "Mounting NFS Server"
-  mount $NFS_SERVER:$NFS_FOLDER/$last_folder ${myfolderarray[i]}
+  sudo mount $NFS_SERVER:$NFS_FOLDER/$last_folder ${myfolderarray[i]}
   if [ $? != 0 ]; then
     echo "[ERROR] There was an error mounting the NFS server: '$NFS_SERVER'"
     exit 1
   fi
-  mount -alias
+  sudo mount -alias
   if [ $? != 0 ]; then
     echo "[ERROR] There was an error mounting the NFS server: '$NFS_SERVER'"
     exit 1
   fi
   sleep 15
   echo "Testing NFS Server"
-  touch ${myfolderarray[i]}/nfs_test > /dev/null
+  sudo touch ${myfolderarray[i]}/nfs_test > /dev/null
   if [ $? == 0 ]; then
     echo "NFS Server mounted successfully"
-    rm -rf ${myfolderarray[i]}/nfs_test
+    sudo rm -rf ${myfolderarray[i]}/nfs_test
   else
     echo "There was an error mounting the NFS server"
     exit 1

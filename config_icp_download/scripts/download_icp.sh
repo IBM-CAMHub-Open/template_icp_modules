@@ -7,6 +7,7 @@ while test $# -gt 0; do
   [[ $1 =~ ^-v|--version ]] && { PARAM_ICP_VERSION="${2}"; shift 2; continue; };
   [[ $1 =~ ^-u|--user ]] && { PARAM_AUTH_USER="${2}"; shift 2; continue; };
   [[ $1 =~ ^-p|--password ]] && { PARAM_AUTH_PASSWORD="${2}"; shift 2; continue; };
+  [[ $1 =~ ^-o|--sshuser ]] && { PARAM_SSH_USER="${2}"; shift 2; continue; };  
   break;
 done
 
@@ -117,28 +118,31 @@ FILE_DOWNLOAD=`echo ${PARAM_ICP} | rev | cut -d"/" -f1  | rev`
 if [ -n $PARAM_ICP ]; then
   # echo "PARAM_ICP: ${PARAM_ICP}"
   if [[ $PARAM_ICP =~ $URL_REGEX ]]; then
-    if [[ -e "/root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME}" ]]; then
-      printf "\033[32m[*] Previous Downloaded successful of /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME}\033[0m\n"
+    if [[ -e "~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME}" ]]; then
+      printf "\033[32m[*] Previous Downloaded successful of ~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME}\033[0m\n"
     else
       echo "[*] ICP TAR File URL was provided: $PARAM_ICP"
       DOCKER_URL=$PARAM_ICP
-      check_command_and_install curl curl curl
-      download_file 'ICP TAR File' $DOCKER_URL /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME} ${PARAM_AUTH_USER} ${PARAM_AUTH_PASSWORD}
-      [[ -e "/root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME}" ]] && printf "\033[32m[*] Downloaded successful of /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME}\033[0m\n" || { printf "\033[31m[ERROR] failed to download file /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME} from ${DOCKER_URL}\033[0m\n" ; exit 1; }
+      ICP_PATH=~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}
       
-      chmod +x /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME}
+      check_command_and_install curl curl curl
+      download_file 'ICP TAR File' $DOCKER_URL $ICP_PATH/${ICP_INSTALLER_FILE_NAME} ${PARAM_AUTH_USER} ${PARAM_AUTH_PASSWORD}
+      [[ -e "$ICP_PATH/${ICP_INSTALLER_FILE_NAME}" ]] && printf "\033[32m[*] Downloaded successful of $ICP_PATH/${ICP_INSTALLER_FILE_NAME}\033[0m\n" || { printf "\033[31m[ERROR] failed to download file $ICP_PATH/${ICP_INSTALLER_FILE_NAME} from ${DOCKER_URL}\033[0m\n" ; exit 1; }
+      
+      chmod +x ~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME}
       printf "\033[32m[ ] Loading TAR file into Docker images....!\033[0m\n"
-      tar -xf  /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME} -O | sudo docker load
+      tar -xf  ~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/${ICP_INSTALLER_FILE_NAME} -O | sudo docker load
       printf "\033[32m[*] Loading TAR file Completed Docker images\033[0m\n"
 
       if [[ "$ARCH" = "ppc64le" && "$PARAM_ICP_VERSION" = "2.1.0.2" ]]; then
           printf "\033[32m[*] Tagging ICP inception image ibmcom/icp-inception-ppc64le:2.1.0.2-ee to ibmcom/icp-inception:2.1.0.2-ee\033[0m\n"
-          docker tag ibmcom/icp-inception-ppc64le:2.1.0.2-ee ibmcom/icp-inception:2.1.0.2-ee
+          sudo docker tag ibmcom/icp-inception-ppc64le:2.1.0.2-ee ibmcom/icp-inception:2.1.0.2-ee
       fi
-      export DOCKER_REPO=`docker images |grep inception |grep $PARAM_ICP_VERSION |awk '{print $1}'`
-      cd /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}
-      docker run -v $(pwd):/data -e LICENSE=accept $DOCKER_REPO:${PARAM_ICP_VERSION}-ee cp -r cluster /data
-      mkdir -p cluster/images; mv ${ICP_INSTALLER_FILE_NAME} cluster/images/
+      export DOCKER_REPO=`sudo docker images |grep inception |grep $PARAM_ICP_VERSION |awk '{print $1}'`
+      cd ~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}
+      sudo docker run -v $(pwd):/data -e LICENSE=accept $DOCKER_REPO:${PARAM_ICP_VERSION}-ee cp -r cluster /data
+      sudo chown ${PARAM_SSH_USER} -R ~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/cluster
+      mkdir -p ./cluster/images; mv ${ICP_INSTALLER_FILE_NAME} ~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/cluster/images/
     fi 
 
   else

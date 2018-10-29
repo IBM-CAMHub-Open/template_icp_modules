@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DOCKER_REPO=`docker images |grep inception |grep $5 |awk '{print $1}'`
+export DOCKER_REPO=`sudo docker images |grep inception |grep $5 |awk '{print $1}'`
 
 
 if $1 && [[ $2 == "worker" ]] ; then

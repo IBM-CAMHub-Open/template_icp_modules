@@ -22,9 +22,10 @@ devpath=`udevadm info --root --name=/dev/$whichdisk | grep DEVPATH | cut -f2 -d'
 devtype=`udevadm info --root --name=/dev/$whichdisk | grep DEVTYPE | cut -f2 -d'='`
 subsystem=`udevadm info --root --name=/dev/$whichdisk | grep SUBSYSTEM | cut -f2 -d'='`
 symlink="gluster-disk-$whichdisk"
-echo "ENV{DEVTYPE}==\"$devtype\", ENV{SUBSYSTEM}==\"$subsystem\", ENV{DEVPATH}==\"$devpath\" SYMLINK+=\"disk/$symlink\"">> /lib/udev/rules.d/10-custom-icp.rules
-udevadm control --reload-rules
-udevadm trigger --type=devices --action=change
+sudo touch /lib/udev/rules.d/10-custom-icp.rules
+echo "ENV{DEVTYPE}==\"$devtype\", ENV{SUBSYSTEM}==\"$subsystem\", ENV{DEVPATH}==\"$devpath\" SYMLINK+=\"disk/$symlink\"" | sudo tee -a /lib/udev/rules.d/10-custom-icp.rules
+sudo udevadm control --reload-rules
+sudo udevadm trigger --type=devices --action=change
 
 manual_symbolic_link=$(echo "/dev/disk/$symlink" | sed 's/\//\\\//g')
 cp /tmp/glusterfs.txt /tmp/glusterfs.txt.backup

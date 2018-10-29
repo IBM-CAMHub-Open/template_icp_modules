@@ -8,6 +8,7 @@ while test $# -gt 0; do
   [[ $1 =~ ^-v|--version ]] && { PARAM_ICP_VERSION="${2}"; shift 2; continue; };
   [[ $1 =~ ^-u|--user ]] && { PARAM_AUTH_USER="${2}"; shift 2; continue; };
   [[ $1 =~ ^-p|--password ]] && { PARAM_AUTH_PASSWORD="${2}"; shift 2; continue; };
+  [[ $1 =~ ^-o|--sshuser ]] && { PARAM_SSH_USER="${2}"; shift 2; continue; };    
   break;
 done
 
@@ -91,6 +92,7 @@ function check_command_and_install() {
       exit 1
     fi
   fi
+  
 }
 
 
@@ -113,19 +115,28 @@ URL_REGEX='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=
 if [ -n $PARAM_DOCKER ]; then
   # echo "PARAM_DOCKER: ${PARAM_DOCKER}"
   if [[ $PARAM_DOCKER =~ $URL_REGEX ]]; then
-    if [[ -e "/root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin" ]]; then
-      # echo "[*] Previous Downloaded successful of /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin"
-      printf "\033[32m[*] Previous Downloaded successful of /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin\033[0m\n"
+    if [[ -e "~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin" ]]; then
+      # echo "[*] Previous Downloaded successful of ~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin"
+      printf "\033[32m[*] Previous Downloaded successful of ~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin\033[0m\n"
     else
       # echo "[*] Docker Binary URL was provided: $PARAM_DOCKER"
       printf "\033[32m[*] Docker Binary URL was provided: $PARAM_DOCKER\033[0m\n"
       DOCKER_URL=$PARAM_DOCKER
+      DOCKER_PATH=~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}
       check_command_and_install curl curl curl
-      download_file 'Docker ICP Binary' $DOCKER_URL /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin ${PARAM_AUTH_USER} ${PARAM_AUTH_PASSWORD}
-      [[ -e "/root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin" ]] && printf "\033[32m[*] Previous Downloaded successful of /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin\033[0m\n" || { printf "\033[31m[ERROR] Previous Downloaded FAILED of /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin from ${DOCKER_URL}\033[0m\n" ; exit 1; }
-      chmod +x /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin
-      sudo /root/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin --install
+      download_file 'Docker ICP Binary' $DOCKER_URL ~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin ${PARAM_AUTH_USER} ${PARAM_AUTH_PASSWORD}
+      [[ -e "$DOCKER_PATH/icp-docker.bin" ]] && printf "\033[32m[*] Previous Downloaded successful of $DOCKER_PATH/icp-docker.bin\033[0m\n" || { printf "\033[31m[ERROR] Previous Downloaded FAILED of $DOCKER_PATH/icp-docker.bin from ${DOCKER_URL}\033[0m\n" ; exit 1; }
+      
+      chmod +x ~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin      
+      sudo ~/ibm-cloud-private-x86_64-${PARAM_ICP_VERSION}/icp-docker.bin --install
+      
       sudo systemctl start docker
+
+	  if [[ ${PARAM_SSH_USER} != "root" ]]
+	  then	
+		  # Make sure the current user has permission to use docker
+	      sudo gpasswd -a ${PARAM_SSH_USER} docker
+	  fi    
     fi
 
   else

@@ -28,11 +28,11 @@ resource "null_resource" "generate_hostfile" {
   provisioner "remote-exec" {
     inline = [
       "set -e",
-      "cp /etc/hosts /etc/hosts.backup",
-      "sed -i 's/127.0.1.1/#127.0.1.1/g' /etc/hosts",
-      "export myhost=`hostname` && sed -i \"/$myhost/d\" /etc/hosts",
+      "sudo cp /etc/hosts /etc/hosts.backup",
+      "sudo sed -i 's/127.0.1.1/#127.0.1.1/g' /etc/hosts",
+      "export myhost=`hostname` && sudo sed -i \"/$myhost/d\" /etc/hosts",
       "cat /tmp/hosts | sudo tee -a /etc/hosts",
-      "cat /tmp/hosts | cut -f1 -d' ' | xargs -i ssh-keyscan {} | sudo tee -a /root/.ssh/known_hosts"
+      "cat /tmp/hosts | cut -f1 -d' ' | xargs -i ssh-keyscan {} | sudo tee -a ~/.ssh/known_hosts"
     ]
   }
 }
