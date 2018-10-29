@@ -28,8 +28,13 @@ resource "null_resource" "addNode" {
   }
 
   provisioner "file" {
-    source      = "${path.module}/scripts/config_glusterfs.sh"
-    destination = "/tmp/config_glusterfs.sh"
+    source      = "${path.module}/scripts/install.sh"
+    destination = "/tmp/install.sh"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/scripts/uninstall.sh"
+    destination = "/tmp/uninstall.sh"
   }
 
   provisioner "remote-exec" {
@@ -40,9 +45,8 @@ resource "null_resource" "addNode" {
       "sudo cp ~/.ssh/id_rsa ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/ssh_key",
       "cd ${var.cluster_location}",
       "export DOCKER_REPO=`sudo docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`",
-      "sudo docker run -e LICENSE=accept --net=host -v $(pwd):/installer/cluster $DOCKER_REPO:${var.icp_version}-ee ${var.node_type} -l ${join(",", var.new_node_IPs)} && printf \"\\033[32m[*] Add Node Succeeded \\033[0m\\n\" || (printf \"\\033[31m[ERROR] Add Node Failed\\033[0m\\n\" && exit 1)",
-      "chmod 755 /tmp/config_glusterfs.sh",
-      "/tmp/config_glusterfs.sh ${var.enable_glusterFS} ${var.node_type} ~/glusterfs.txt ${var.cluster_location} ${var.icp_version}",
+      "chmod 755 /tmp/install.sh",
+      "/tmp/install.sh ${var.enable_glusterFS} ${var.node_type} ~/glusterfs.txt ${var.cluster_location} ${var.icp_version} ${join(",", var.new_node_IPs)}",
     ]
   }
 
@@ -51,8 +55,8 @@ resource "null_resource" "addNode" {
     inline                = [
       "set -e",
       "cd ${var.cluster_location}",
-      "export DOCKER_REPO=`sudo docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`",
-      "sudo docker run -e LICENSE=accept --net=host -v $(pwd):/installer/cluster $DOCKER_REPO:${var.icp_version}-ee uninstall -l ${join(",", var.new_node_IPs)} && printf \"\\033[32m[*] Remove Node Succeeded \\033[0m\\n\" || (printf \"\\033[31m[ERROR] Remove Node Failed\\033[0m\\n\" && exit 1)",
+      "chmod 755 /tmp/uninstall.sh",
+      "/tmp/uninstall.sh ${var.icp_version} ${join(",", var.new_node_IPs)}",
     ]
   }
 }
