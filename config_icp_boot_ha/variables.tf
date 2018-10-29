@@ -10,6 +10,7 @@ variable "enable_bluemix_install"        { type="string" default = "false" descr
 variable "enable_glusterFS"     { type = "string" description = "Enable GlusterFS on Worker nodes?"}
 variable "bluemix_token"   		{ type="string" description = "Bluemix token"}
 variable "enable_metering"      { type="string" description = "Enable IBM Cloud Private Metering"}
+variable "enable_monitoring"      { type="string" description = "Enable IBM Cloud Private Monitoring"}
 variable "cluster_vip"          { type="string" description = "IBM Cloud Private Cluster Name"}
 variable "cluster_vip_iface"    { type="string" description = "IBM Cloud Private Cluster Network Interface"}
 variable "proxy_vip"            { type="string" description = "IBM Cloud Private Proxy VIP"}
