@@ -4,7 +4,7 @@ export DOCKER_REPO=`sudo docker images |grep inception |grep $5 |awk '{print $1}
 
 function config_kubectl() {
     printf "\033[32m[*] Configuring kubectl...... \033[0m\n"
-    docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data $DOCKER_REPO:$2-ee cp /usr/local/bin/kubectl /data
+    sudo docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data $DOCKER_REPO:$2-ee cp /usr/local/bin/kubectl /data
     export MASTER_IP=`awk 'f{print;f=0} /\[master\]/{f=1}' $1/hosts`
     export CLUSTER_NAME=`sed -n -e '/# cluster_name/ s/.*\: *//p' $1/config.yaml`
     if [ -z "$MASTER_IP" ] || [ -z "$CLUSTER_NAME" ] ; then
@@ -99,6 +99,7 @@ if [[ $2 == "worker" ]] ; then
                 sed -i -e '/\[hostgroup-glusterfs\]/r new_glusterfs_vms.txt' $4/hosts
                 config_kubectl $4 $5
                 sleep 20
+                sudo  chown $7 -R $4
                 EXISTING_GlusterFS=`kubectl -n kube-system get pod -owide -l glusterfs=pod | grep "Running" | awk '{print $1}' | head -n 1`
                 #sed -i -e '/\[worker\]/r new_glusterfs_vms.txt' $4/hosts
                 if sudo docker run -e LICENSE=accept --net=host -v "$(pwd)":/installer/cluster $DOCKER_REPO:$5-ee hostgroup -l $6 ; then

@@ -88,7 +88,7 @@ user_auth_key_file_private_temp=$user_home/.ssh/id_rsa_temp
 echo "$user_auth_key_file"
 if ! [ -f $user_auth_key_file ]; then
 echo "$user_auth_key_file does not exist on this system, creating."
-mkdir $user_home/.ssh
+mkdir -p $user_home/.ssh
 chmod 700 $user_home/.ssh
 touch $user_home/.ssh/authorized_keys
 chmod 600 $user_home/.ssh/authorized_keys

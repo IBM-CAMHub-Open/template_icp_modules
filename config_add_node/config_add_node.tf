@@ -46,9 +46,9 @@ resource "null_resource" "addNode" {
       "cd ${var.cluster_location}",
       "export DOCKER_REPO=`sudo docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`",
       "chmod 755 /tmp/install.sh",
-      "/tmp/install.sh ${var.enable_glusterFS} ${var.node_type} ~/glusterfs.txt ${var.cluster_location} ${var.icp_version} ${join(",", var.new_node_IPs)}",
+      "/tmp/install.sh ${var.enable_glusterFS} ${var.node_type} ~/glusterfs.txt ${var.cluster_location} ${var.icp_version} ${join(",", var.new_node_IPs)} ${var.vm_os_user}",
     ]
-  }
+  }  
 
   provisioner "remote-exec" {
     when                  = "destroy"
