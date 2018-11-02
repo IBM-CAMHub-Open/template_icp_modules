@@ -92,4 +92,5 @@ variable "proxy_lb_address" {
 }
 
 variable "enable_glusterFS"     { type = "string" description = "Enable GlusterFS on Worker nodes?"}
-variable "enable_monitoring"      { type="string" description = "Enable IBM Cloud Private Monitoring"}
+variable "enable_monitoring"    { type="string" description = "Enable IBM Cloud Private Monitoring"}
+variable "enable_va"            { type="string" description = "Enable IBM Cloud Private Vulnerability Advisor"}
