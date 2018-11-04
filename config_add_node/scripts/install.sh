@@ -96,7 +96,8 @@ if [[ $2 == "worker" ]] ; then
                 sed -n -e '/nodes:/,/storageClass:/ p' $3 | sed -e '1d;$d' > new_glusterfs_nodes.txt
                 sed -i -e '/^    nodes:/r new_glusterfs_nodes.txt' $4/config.yaml
                 sed -n -e '/- ip/ s/.*\: *//p' new_glusterfs_nodes.txt > new_glusterfs_vms.txt
-                sed -i -e '/\[hostgroup-glusterfs\]/r new_glusterfs_vms.txt' $4/hosts
+                (grep -q '\[hostgroup-glusterfs\]' $4/hosts && sed -i -e '/\[hostgroup-glusterfs\]/r new_glusterfs_vms.txt' $4/hosts) || (echo '[hostgroup-glusterfs]' >> $4/hosts && sed -i -e '/\[hostgroup-glusterfs\]/r new_glusterfs_vms.txt' $4/hosts)
+                #sed -i -e '/\[hostgroup-glusterfs\]/r new_glusterfs_vms.txt' $4/hosts
                 config_kubectl $4 $5
                 sleep 20
                 sudo  chown $7 -R $4
