@@ -115,11 +115,9 @@ resource "null_resource" "setup_installer_tar" {
       "echo \"metering_enabled: ${var.enable_metering}\" >> ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       # "echo \"cluster_access_ip: ${var.cluster_access_ip}\" >> ~/${var.icp_version}/cluster/config.yaml",
       "sed -i 's/default_admin_user.*/default_admin_user: ${var.icp_admin_user}/g' ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
-
       "sed -i 's/default_admin_password.*/default_admin_password: ${var.icp_admin_password}/g' ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "chmod 755  ~/ibm-cloud-private-x86_64-${var.icp_version}/set_ansible_user.sh",
-	  "bash -c '~/ibm-cloud-private-x86_64-${var.icp_version}/set_ansible_user.sh ${var.vm_os_user} ${var.icp_version}'",
-
+	    "bash -c '~/ibm-cloud-private-x86_64-${var.icp_version}/set_ansible_user.sh ${var.vm_os_user} ${var.icp_version}'",
       "sudo cp ~/.ssh/id_rsa ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/ssh_key",
       "cd  ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
       "export DOCKER_REPO=`sudo docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`",
