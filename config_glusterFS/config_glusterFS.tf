@@ -56,14 +56,18 @@ resource "null_resource" "load_device_script" {
     destination = "/tmp/glusterfs.txt"
   }
 
+  provisioner "file" {
+    source      = "${path.module}/scripts/copy_glusterfs_txt.sh"
+    destination = "/tmp/copy_glusterfs_txt.sh"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "set -e",
       "chmod 755 /tmp/interpolate_device_symlink.sh",
       "/tmp/interpolate_device_symlink.sh",
-      "sudo apt-get install sshpass",
-      "ssh-keyscan ${var.boot_vm_ipv4_address} | sudo tee -a  ~/.ssh/known_hosts",
-      "sshpass -p ${var.vm_os_password} scp /tmp/glusterfs.txt ${var.boot_vm_ipv4_address}:~/",
+      "chmod 755 /tmp/copy_glusterfs_txt.sh",
+      "/tmp/copy_glusterfs_txt.sh -p ${var.vm_os_password} -i ${var.boot_vm_ipv4_address}"
     ]
   }
 }

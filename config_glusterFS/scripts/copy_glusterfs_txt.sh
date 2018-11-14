@@ -1,9 +1,18 @@
 #!/bin/bash
 
+set -x
+
+while test $# -gt 0; do
+  [[ $1 =~ ^-i|--bootip ]] && { BOOT_IP="${2}"; shift 2; continue; };
+  [[ $1 =~ ^-p|--password ]] && { BOOT_PASSWORD="${2}"; shift 2; continue; };
+  break;
+done
+
 # Check if a command exists
 function command_exists() {
   type "$1" &> /dev/null;
 }
+
 
 function check_command_and_install() {
     command=$1
@@ -45,17 +54,12 @@ if [[ $PLATFORM == *"redhat"* ]]; then
     PLATFORM="rhel"
 fi
 
+
 ## Install sshpass package
 check_command_and_install sshpass sshpass sshpass
 
+## Gather key for boot host
+ssh-keyscan ${BOOT_IP} | sudo tee -a  ~/.ssh/known_hosts
 
-sudo chown $2 ~/.ssh/known_hosts
-ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
-ips=$(echo $1 | sed 's/[][]//g') && IFS=', '
-for ip in $ips; do
-    echo "add key for $ip"
-    ssh-keygen -R $ip
-    ssh-keyscan -H $ip >> ~/.ssh/known_hosts
-    sshpass -p $3 ssh-copy-id -i ~/.ssh/id_rsa.pub $2@$ip 
-done
-
+## Send glusterfs file to boot host
+sshpass -p ${BOOT_PASSWORD} scp /tmp/glusterfs.txt ${BOOT_IP}:~/

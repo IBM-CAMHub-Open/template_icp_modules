@@ -78,13 +78,20 @@ if [[ $PLATFORM == *"redhat"* ]]; then
   PLATFORM="rhel"
 fi
 
+# Install glusterfs client
 check_command_and_install glusterfs-client glusterfs-client glusterfs-client
+
 if [ `lsmod | grep dm_thin_pool | wc -l` -gt 0 ];then
-  printf "\033[32m%s [MODULE_CONFIGURED]\n\033[0m\n" "dm_thin_pool"
+    printf "\033[32m%s [MODULE_CONFIGURED]\n\033[0m\n" "dm_thin_pool"
 else
-  printf "\033[32m%s [CONFIGURING_MODULE]\n\033[0m\n" "dm_thin_pool"
-  echo "Commenting out and replacing with ICP setting for - dm_thin_pool"
-  sudo sed -i '/dm_thin_pool/s/^/#/g' /etc/modules
-  echo dm_thin_pool | sudo tee -a /etc/modules
-  sudo modprobe dm_thin_pool
+    printf "\033[32m%s [CONFIGURING_MODULE]\n\033[0m\n" "dm_thin_pool"
+    echo "Commenting out and replacing with ICP setting for - dm_thin_pool"
+    if [[ $PLATFORM == *"ubuntu"* ]]; then
+        sudo sed -i '/dm_thin_pool/s/^/#/g' /etc/modules
+        echo dm_thin_pool | sudo tee -a /etc/modules
+    elif [[ $PLATFORM == *"rhel"* ]]; then
+        sudo sed -i '/dm_thin_pool/s/^/#/g' /etc/modules-load.d/dm_thin_pool.conf
+        echo dm_thin_pool | sudo tee -a /etc/modules-load.d/dm_thin_pool.conf
+    fi
+    sudo modprobe dm_thin_pool
 fi

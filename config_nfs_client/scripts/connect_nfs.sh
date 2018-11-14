@@ -42,6 +42,15 @@ function check_command_and_install() {
       fi
   fi
 }
+
+function install_nfs() {
+    if [[ $PLATFORM == *"ubuntu"* ]]; then
+        check_command_and_install nfs-common nfs-common nfs-common
+    elif [[ $PLATFORM == *"rhel"* ]]; then
+        check_command_and_install nfs-utils nfs-utils nfs-utils
+    fi
+}
+
 # Identify the platform and version using Python
 if command_exists python; then
   PLATFORM=`python -c "import platform;print(platform.platform())" | rev | cut -d '-' -f3 | rev | tr -d '".' | tr '[:upper:]' '[:lower:]'`
@@ -66,9 +75,7 @@ fi
 
 
 # Install requirements
-check_command_and_install nfs-common nfs-common nfs-common
-# sudo apt-get update -y
-# sudo apt-get install -y nfs-common
+install_nfs
 
 echo "Creating mount points"
 export NUM_FOLDERS=${#myfolderarray[@]}
