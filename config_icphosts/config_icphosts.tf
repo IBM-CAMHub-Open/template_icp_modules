@@ -21,7 +21,7 @@ resource "null_resource" "generate_icp_hosts_file_both_true" {
   count      = "${var.enable_vm_va == "true" && var.enable_vm_management == "true" ? 1 : 0}"
 
   provisioner "local-exec" {
-    command = "bash -c '/tmp/${var.random}/generate_icp_hosts.sh -r ${var.random} -m ${var.master_public_ips} -n ${var.management_public_ips} -p ${var.proxy_public_ips} -w ${var.worker_public_ips} -v ${var.va_public_ips} -g ${var.enable_glusterFS}'"
+    command = "bash -c '/tmp/${var.random}/generate_icp_hosts.sh -i ${var.icp_version} -r ${var.random} -m ${var.master_public_ips} -n ${var.management_public_ips} -p ${var.proxy_public_ips} -w ${var.worker_public_ips} -v ${var.va_public_ips} -g ${var.enable_glusterFS}'"
   }
 }
 
@@ -30,7 +30,7 @@ resource "null_resource" "generate_icp_hosts_file_mgmt_true" {
   count      = "${var.enable_vm_va == "false" && var.enable_vm_management == "true" ? 1 : 0}"
 
   provisioner "local-exec" {
-    command = "bash -c '/tmp/${var.random}/generate_icp_hosts.sh -r ${var.random} -m ${var.master_public_ips} -n ${var.management_public_ips} -p ${var.proxy_public_ips} -w ${var.worker_public_ips} -g ${var.enable_glusterFS}'"
+    command = "bash -c '/tmp/${var.random}/generate_icp_hosts.sh -i ${var.icp_version} -r ${var.random} -m ${var.master_public_ips} -n ${var.management_public_ips} -p ${var.proxy_public_ips} -w ${var.worker_public_ips} -g ${var.enable_glusterFS}'"
   }
 }
 
@@ -39,7 +39,7 @@ resource "null_resource" "generate_icp_hosts_file_va_true" {
   count      = "${var.enable_vm_va == "true" && var.enable_vm_management == "false" ? 1 : 0}"
 
   provisioner "local-exec" {
-    command = "bash -c '/tmp/${var.random}/generate_icp_hosts.sh -r ${var.random} -m ${var.master_public_ips} -p ${var.proxy_public_ips} -w ${var.worker_public_ips} -v ${var.va_public_ips} -g ${var.enable_glusterFS}'"
+    command = "bash -c '/tmp/${var.random}/generate_icp_hosts.sh -i ${var.icp_version} -r ${var.random} -m ${var.master_public_ips} -p ${var.proxy_public_ips} -w ${var.worker_public_ips} -v ${var.va_public_ips} -g ${var.enable_glusterFS}'"
   }
 }
 
@@ -48,7 +48,7 @@ resource "null_resource" "generate_icp_hosts_file_both_false" {
   count      = "${var.enable_vm_va == false && var.enable_vm_management == false ? 1 : 0}"
 
   provisioner "local-exec" {
-    command = "bash -c '/tmp/${var.random}/generate_icp_hosts.sh -r ${var.random} -m ${var.master_public_ips} -p ${var.proxy_public_ips} -w ${var.worker_public_ips} -g ${var.enable_glusterFS}'"
+    command = "bash -c '/tmp/${var.random}/generate_icp_hosts.sh -i ${var.icp_version} -r ${var.random} -m ${var.master_public_ips} -p ${var.proxy_public_ips} -w ${var.worker_public_ips} -g ${var.enable_glusterFS}'"
   }
 }
 

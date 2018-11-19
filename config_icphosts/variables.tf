@@ -54,3 +54,4 @@ variable "enable_vm_management" {
 }
 
 variable "enable_glusterFS"     { type = "string" description = "Enable GlusterFS on Worker nodes?"}
+variable "icp_version"          {type = "string" description = "IBM Cloud Private Version"}

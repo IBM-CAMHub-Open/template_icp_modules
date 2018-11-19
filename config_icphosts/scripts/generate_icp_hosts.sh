@@ -4,6 +4,7 @@
 set -e
 
 while test $# -gt 0; do
+  [[ $1 =~ ^-i|--icpversion$ ]] && { icpversion="$2"; shift 2; continue; };
   [[ $1 =~ ^-r|--random$ ]] && { random="$2"; shift 2; continue; };
   [[ $1 =~ ^-m|--master$ ]] && { masterip="$2"; shift 2; continue; };
   [[ $1 =~ ^-p|--proxy$ ]] && { proxyip="$2"; shift 2; continue; };
@@ -60,7 +61,7 @@ icp_hosts_txt=$(
       echo "${myvaarray[i]}" 
     done
   fi
-  if [ ${gpfs} == true ]
+  if [ ${gpfs} == true ] && [[ ${icpversion} != 2.1.* ]]
   then
     echo "[hostgroup-glusterfs]"
     for ((i=0; i < ${NUM_WORKER}; i++)); do
