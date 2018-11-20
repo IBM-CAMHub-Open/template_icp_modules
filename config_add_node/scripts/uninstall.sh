@@ -30,7 +30,7 @@ function remove_glusterfs_node() {
 
 if sudo docker run -e LICENSE=accept --net=host -v "$(pwd)":/installer/cluster $DOCKER_REPO:$1-ee uninstall -l $2 ; then
     printf "\033[32m[*] Remove Node Succeeded \033[0m\n"
-    if [[ $1 == "3.1.0" ]] ; then
+    if [[ $1 == "3.1.*" ]] ; then
         IFS=',' read -r -a iparray <<< $2
         for ip in "${iparray[@]}"
         do
