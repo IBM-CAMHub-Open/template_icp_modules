@@ -13,7 +13,11 @@ function config_kubectl() {
     else
         kubectl config set-cluster $CLUSTER_NAME --server=https://$MASTER_IP:8001 --insecure-skip-tls-verify=true
         kubectl config set-context $CLUSTER_NAME --cluster=$CLUSTER_NAME
-        kubectl config set-credentials $CLUSTER_NAME --client-certificate=./cfc-certs/kubecfg.crt --client-key=./cfc-certs/kubecfg.key
+        if [[ $2 == "3.1.0" ]] ; then
+           kubectl config set-credentials $CLUSTER_NAME --client-certificate=./cfc-certs/kubecfg.crt --client-key=./cfc-certs/kubecfg.key
+        else
+           kubectl config set-credentials $CLUSTER_NAME --client-certificate=./cfc-certs/kubernetes/kubecfg.crt --client-key=./cfc-certs/kubernetes/kubecfg.key
+        fi
         kubectl config set-context $CLUSTER_NAME  --user=$CLUSTER_NAME
         kubectl config use-context $CLUSTER_NAME
         printf "\033[32m[*] Configure kubectl Succeeded \033[0m\n"
