@@ -90,7 +90,7 @@ resource "null_resource" "load_icp_images" {
       "set -e",
       "chmod 755 ~/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh",
       "echo ~/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password} -o ${var.vm_os_user}",
-      "bash -c '~/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i ${var.icp_url} -v ${var.icp_version} -u ${var.download_user} -p ${var.download_user_password} -o ${var.vm_os_user}'"
+      "bash -c '~/ibm-cloud-private-x86_64-${var.icp_version}/download_icp.sh -i \"${var.icp_url}\" -v \"${var.icp_version}\" -u \"${var.download_user}\" -p \"${var.download_user_password}\" -o \"${var.vm_os_user}\"'"
       # "tar -xf  ibm-cloud-private-x86_64-${var.ICP_Version}.tar.gz -O | sudo docker load",
       # export DOCKER_REPO=`sudo docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`.
       # "sudo docker run -v $(pwd):/data -e LICENSE=accept $DOCKER_REPO:${var.ICP_Version}-ee cp -r cluster /data",
