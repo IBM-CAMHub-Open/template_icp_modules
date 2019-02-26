@@ -114,6 +114,8 @@ resource "null_resource" "setup_installer_tar" {
       "echo \"kibana_install: ${var.enable_kibana}\" >> ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"metering_enabled: ${var.enable_metering}\" >> ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       # "echo \"cluster_access_ip: ${var.cluster_access_ip}\" >> ~/${var.icp_version}/cluster/config.yaml",
+      "sed -i 's/# cluster_name.*/cluster_name: ${var.icp_cluster_name}/g' ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
+      "sed -i 's/# cluster_CA_domain.*/cluster_CA_domain: ${var.icp_cluster_name}.${var.vm_domain}/g' ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "sed -i 's/default_admin_user.*/default_admin_user: ${var.icp_admin_user}/g' ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "sed -i 's/default_admin_password.*/default_admin_password: ${var.icp_admin_password}/g' ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "chmod 755  ~/ibm-cloud-private-x86_64-${var.icp_version}/set_ansible_user.sh",

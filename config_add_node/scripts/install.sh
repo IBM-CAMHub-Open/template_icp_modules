@@ -66,37 +66,37 @@ function add_storage_node() {
 }
 
 if [[ $2 == "worker" ]] ; then
-    if [ -e $3 ] ; then
-        if [[ $5 == "2.1.*" ]] ; then
+    if [[ $5 == "2.1.*" ]] ; then
+        if sudo docker run -e LICENSE=accept --net=host -v "$(pwd)":/installer/cluster $DOCKER_REPO:$5-ee worker -l $6 ; then
+            printf "\033[32m[*] Add Node Succeeded \033[0m\n"
+            if $1 ; then
+                mv $4/config.yaml $4/config.yaml_temp
+                cp $3 $4/config.yaml
+                if sudo docker run --net=host -t -e LICENSE=accept -v "$(pwd)":/installer/cluster $DOCKER_REPO:$5-ee install-glusterfs -vv | tee gluster_install.txt ; then
+                    rm $4/config.yaml
+                    mv $4/config.yaml_temp $4/config.yaml
+                    printf "\033[32m[*] Configure GlusterFS Succeeded \033[0m\n"
+                else
+                    rm $4/config.yaml
+                    mv $4/config.yaml_temp $4/config.yaml
+                    printf "\033[31m[ERROR] Configure GlusterFS Failed\033[0m\n"
+                    exit 1
+                fi
+            fi
+        else
+            printf "\033[31m[ERROR] Add Node Failed\033[0m\n"
+            exit 1
+        fi
+    else
+        if [[ $1 == "false" ]] ; then
             if sudo docker run -e LICENSE=accept --net=host -v "$(pwd)":/installer/cluster $DOCKER_REPO:$5-ee worker -l $6 ; then
                 printf "\033[32m[*] Add Node Succeeded \033[0m\n"
-                if $1 ; then
-                    mv $4/config.yaml $4/config.yaml_temp
-                    cp $3 $4/config.yaml
-                    if sudo docker run --net=host -t -e LICENSE=accept -v "$(pwd)":/installer/cluster $DOCKER_REPO:$5-ee install-glusterfs -vv | tee gluster_install.txt ; then
-                        rm $4/config.yaml
-                        mv $4/config.yaml_temp $4/config.yaml
-                        printf "\033[32m[*] Configure GlusterFS Succeeded \033[0m\n"
-                    else
-                        rm $4/config.yaml
-                        mv $4/config.yaml_temp $4/config.yaml
-                        printf "\033[31m[ERROR] Configure GlusterFS Failed\033[0m\n"
-                        exit 1
-                    fi
-                fi
             else
                 printf "\033[31m[ERROR] Add Node Failed\033[0m\n"
                 exit 1
             fi
         else
-            if [[ $1 == "false" ]] ; then
-                if sudo docker run -e LICENSE=accept --net=host -v "$(pwd)":/installer/cluster $DOCKER_REPO:$5-ee worker -l $6 ; then
-                    printf "\033[32m[*] Add Node Succeeded \033[0m\n"
-                else
-                    printf "\033[31m[ERROR] Add Node Failed\033[0m\n"
-                    exit 1
-                fi
-            else
+            if [ -e $3 ] ; then
                 sed -n -e '/nodes:/,/storageClass:/ p' $3 | sed -e '1d;$d' > new_glusterfs_nodes.txt
                 sed -i -e '/^    nodes:/r new_glusterfs_nodes.txt' $4/config.yaml
                 sed -n -e '/- ip/ s/.*\: *//p' new_glusterfs_nodes.txt > new_glusterfs_vms.txt
@@ -117,11 +117,11 @@ if [[ $2 == "worker" ]] ; then
                 add_storage_node new_glusterfs_vms.txt $4 $EXISTING_GlusterFS
                 rm new*.txt
                 printf "\033[32m[*] Configure GlusterFS Succeeded \033[0m\n"
+            else
+                printf "\033[31m[ERROR] No gluster.txt Found, Configure GlusterFS Failed\033[0m\n"
+                exit 1
             fi
         fi
-    else
-        printf "\033[31m[ERROR] No gluster.txt Found, Configure GlusterFS Failed\033[0m\n"
-        exit 1
     fi
 else
     if sudo docker run -e LICENSE=accept --net=host -v "$(pwd)":/installer/cluster $DOCKER_REPO:$5-ee $2 -l $6 ; then
