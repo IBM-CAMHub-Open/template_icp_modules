@@ -2,12 +2,18 @@
 LOGFILE=/tmp/loadimage.log
 exec  > $LOGFILE 2>&1
 
-echo "Got first parameter $1"
-echo "Second parameter $2"
-echo "Third parameter $3"
+echo "Image $1"
+echo "image_file $2"
+echo "image_location $3"
+echo "registry_server $4"
+echo "registry_username $5"
+
 image=$1
 image_file=$2
 image_location=$3
+registry_server=$4
+registry_username=$5
+registry_password=$6
 sourcedir=/opt/ibm/cluster/images
 
 source /tmp/icp-bootmaster-scripts/functions.sh
@@ -48,6 +54,46 @@ then
   iam=$(whoami)
   sudo chown $iam -R /opt/ibm/cluster/images   
    
+  sudo mkdir -p /registry
+  sudo mkdir -p /etc/docker/certs.d/${registry_server}
+  sudo cp /etc/registry/registry-cert.pem /etc/docker/certs.d/${registry_server}/ca.crt
+
+  # Create authentication
+  sudo mkdir /auth
+  sudo docker run \
+    --entrypoint htpasswd \
+    registry:2 -Bbn ${registry_username} ${registry_password} | sudo tee /auth/htpasswd
+
+  sudo docker run -d \
+    --restart=always \
+    --name registry \
+    -v /etc/registry:/certs \
+    -v /registry:/registry \
+    -v /auth:/auth \
+    -e "REGISTRY_AUTH=htpasswd" \
+    -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+    -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
+    -e REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/registry \
+    -e REGISTRY_HTTP_ADDR=0.0.0.0:8500 \
+    -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry-cert.pem \
+    -e REGISTRY_HTTP_TLS_KEY=/certs/registry-key.pem  \
+    -p 8500:8500 \
+    registry:2
+
+  # Retag images for private registry
+  sudo docker images | grep -v REPOSITORY | grep -v ${registry_server} | awk '{print $1 ":" $2}' | xargs -n1 -I{} sudo docker tag {} ${registry_server}:8500/{}
+
+  # ICP 3.1.0 archives also includes the architecture in image names which is not expected in private repos, also tag a non-arched version
+  sudo docker images | grep ${registry_server}:8500 | grep "amd64" | awk '{gsub("-amd64", "") ; print $1 "-amd64:" $2 " " $1 ":" $2 }' | xargs -n2  sh -c 'sudo docker tag $1 $2' argv0
+
+  # Push all images and tags to private docker registry
+  sudo docker login --password ${registry_password} --username ${registry_username} ${regisregistry_servertry}:8500
+  while read image; do
+    echo "Pushing ${image}"
+    sudo docker push ${image} >> /tmp/imagepush.log
+  done < <(sudo docker images | grep ${registry_server} | awk '{print $1 ":" $2}' | sort | uniq)
+
+
 else
   # If we don't have an image locally we'll pull from docker registry
   if [[ -z $(docker images -q ${registry}${registry:+/}${org}/${repo}:${tag}) ]]; then

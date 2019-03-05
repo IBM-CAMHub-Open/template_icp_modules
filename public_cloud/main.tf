@@ -179,7 +179,7 @@ resource "null_resource" "icp-image" {
   provisioner "remote-exec" {
     inline = [
       "echo \"Loading image ${var.icp-version}\"",
-      "/tmp/icp-bootmaster-scripts/load-image.sh ${var.icp-version} /tmp/${basename(var.image_file)} \"${var.image_location}\" "
+      "/tmp/icp-bootmaster-scripts/load-image.sh ${var.icp-version} /tmp/${basename(var.image_file)} \"${var.image_location}\" ${var.registry_server} ${var.registry_username} ${var.registry_password}"
     ]
   }
 }

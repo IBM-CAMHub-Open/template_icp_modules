@@ -43,6 +43,21 @@ variable "image_location" {
   default     = "false"
 }
 
+variable "registry_server" {
+  description = "Name of the private Docker registry server running on the boot node"
+  default     = ""
+}
+
+variable "registry_username" {
+  description = "Username to connect to the private Docker registry server running on the boot node"
+  default     = ""
+}
+
+variable "registry_password" {
+  description = "Password used to connect to the private Docker registry server running on the boot node"
+  default     = ""
+}
+
 variable "docker_package_location" {
   description = "http or nfs location of docker installer which ships with ICP. Option for RHEL which does not support docker-ce"
   default     = ""
