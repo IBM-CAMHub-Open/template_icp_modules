@@ -87,7 +87,7 @@ then
   sudo docker images | grep ${registry_server}:8500 | grep "amd64" | awk '{gsub("-amd64", "") ; print $1 "-amd64:" $2 " " $1 ":" $2 }' | xargs -n2  sh -c 'sudo docker tag $1 $2' argv0
 
   # Push all images and tags to private docker registry
-  sudo docker login --password ${registry_password} --username ${registry_username} ${regisregistry_servertry}:8500
+  sudo docker login --password ${registry_password} --username ${registry_username} ${registry_server}:8500
   while read image; do
     echo "Pushing ${image}"
     sudo docker push ${image} >> /tmp/imagepush.log
