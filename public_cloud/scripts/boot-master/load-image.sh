@@ -47,7 +47,8 @@ fi
 
 if [[ -s "$image_file" ]]
 then
-  tar xf ${image_file} -O | sudo docker load
+  echo "Unpacking ${image_file} ..."
+  pv --interval 10 ${image_file} | tar zxf - -O | sudo docker load
   
   mkdir -p ${sourcedir}
   sudo mv ${image_file} /opt/ibm/cluster/images/
