@@ -36,8 +36,16 @@ lvm2"
   if [ ! -z "${packages_to_install}" ]; then
     # attempt to install, probably won't work airgapped but we'll get an error immediately
     echo "Attempting to install: ${packages_to_install} ..."
-    sudo apt-get update
-    sudo apt-get install -y ${packages_to_install}
+
+    until sudo apt-get update; do
+      echo "Sleeping 2 sec while waiting for apt-get update to finish ..."
+      sleep 2
+    done
+
+    until sudo apt-get install -y ${packages_to_install}; do
+      echo "Sleeping 2 sec while waiting for apt-get install to finish ..."
+      sleep 2
+    done    
   fi
 }
 
