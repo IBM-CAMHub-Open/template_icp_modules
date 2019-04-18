@@ -54,7 +54,13 @@ then
   sudo mv ${image_file} /opt/ibm/cluster/images/
   iam=$(whoami)
   sudo chown $iam -R /opt/ibm/cluster/images   
-   
+
+  if [ -z "${registry_server}" ]; then
+	
+	 echo "No internal registry server setup exit now"
+	 exit 0
+  fi   
+	
   sudo mkdir -p /registry
   sudo mkdir -p /etc/docker/certs.d/${registry_server}
   sudo cp /etc/registry/registry-cert.pem /etc/docker/certs.d/${registry_server}/ca.crt
