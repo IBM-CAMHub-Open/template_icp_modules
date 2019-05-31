@@ -144,18 +144,19 @@ then
   $kubectl config set-context kubectl --user=user
   $kubectl config use-context kubectl
   $kubectl get nodes
+  nodescmd=$($kubectl get nodes)
+  echo "$nodescmd"
 
   list=$(IFS=, ; echo "${removed[*]}")
 
   for ip in "${removed[@]}"; do
   
-	  echo "${ip} remove node"	  	
-	  delcmd=$($kubectl delete node ${ip})
-	  RC=$?
-	  if [ $RC -eq 0 ]; then
-	    printf "\033[32m[*] Node ${ip} has been removed successfully \033[0m\n"
-      else
-        printf "\033[31m[ERROR] Node ${ip} had failed to remove, try to find the node by host\033[0m\n"
+	  echo "${ip} remove node"
+	  if [[ "$nodescmd" =~ "${ip}" ]]; then
+	  	delcmd=$($kubectl delete node ${ip})
+	    printf "\033[32m[*] Node ${ip} has been removed successfully \033[0m\n"	  	
+	  else
+        printf "\033[31m[ERROR] Node ${ip} not found, try to find the node by host\033[0m\n"
       
 		for oip in "${clusterips[@]}"; do
 			  echo "Process  ${oip}"    
