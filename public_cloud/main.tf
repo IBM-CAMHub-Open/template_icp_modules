@@ -69,6 +69,7 @@ resource "null_resource" "icp-cluster" {
       "/tmp/icp-common-scripts/docker-user.sh"
     ]
   }
+    
 }
 
 ## Cluster postconfig hook
@@ -369,7 +370,7 @@ resource "null_resource" "icp-worker-scaler" {
       "echo -n ${join(",", var.icp-master)} > /tmp/masterlist.txt",
       "echo -n ${join(",", var.icp-proxy)} > /tmp/proxylist.txt",
       "echo -n ${join(",", var.icp-worker)} > /tmp/workerlist.txt",
-      "echo -n ${join(",", var.icp-management)} > /tmp/managementlist.txt"
+      "echo -n ${join(",", var.icp-management)} > /tmp/managementlist.txt"      
     ]
   }
 
@@ -387,6 +388,8 @@ resource "null_resource" "icp-worker-scaler" {
 
   provisioner "remote-exec" {
     inline = [
+      "echo '${var.ssh_key_base64}' | base64 --decode > ~/.ssh/id_rsa",
+      "chmod 0600 ~/.ssh/id_rsa",
       "chmod a+x /tmp/icp-bootmaster-scripts/scaleworkers.sh",
       "/tmp/icp-bootmaster-scripts/scaleworkers.sh ${var.icp-version}"
     ]

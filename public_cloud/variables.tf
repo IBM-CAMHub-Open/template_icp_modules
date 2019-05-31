@@ -23,6 +23,12 @@ variable "icp-management" {
   default     = []
 }
 
+variable "icp-va" {
+  type        = "list"
+  description = "IP addresses of ICP VA Nodes, if management is to be separated from master nodes. Optional"
+  default     = []
+}
+
 variable "enterprise-edition" {
   description = "Whether to provision enterprise edition (EE) or community edition (CE). EE requires image files to be provided"
   default     = false
@@ -167,10 +173,10 @@ variable "install-verbosity" {
 }
 
 locals {
-  spec-icp-ips  = "${distinct(compact(concat(list(var.boot-node), var.icp-master, var.icp-proxy, var.icp-management, var.icp-worker)))}"
+  spec-icp-ips  = "${distinct(compact(concat(list(var.boot-node), var.icp-master, var.icp-proxy, var.icp-management, var.icp-worker, var.icp-va)))}"
   host-group-ips = "${distinct(compact(concat(list(var.boot-node), keys(transpose(var.icp-host-groups)))))}"
   icp-ips       = "${distinct(concat(local.spec-icp-ips, local.host-group-ips))}"
-  cluster_size  = "${length(concat(var.icp-master, var.icp-proxy, var.icp-worker, var.icp-management))}"
+  cluster_size  = "${length(concat(var.icp-master, var.icp-proxy, var.icp-worker, var.icp-management, var.icp-va))}"
   ssh_key       = "${var.ssh_key_base64 == "" ? file(coalesce(var.ssh_key_file, "/dev/null")) : base64decode(var.ssh_key_base64)}"
   boot-node     = "${element(compact(concat(list(var.boot-node),var.icp-master)), 0)}"
 }
