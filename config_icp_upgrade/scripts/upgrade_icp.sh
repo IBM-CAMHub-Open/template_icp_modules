@@ -138,6 +138,8 @@ elif [[ ${ICP_VERSION} == "3.1.0" ]] ; then
     upgradeTo31x
 elif [[ ${ICP_VERSION} == "3.1.1" ]] ; then
     upgradeTo31x
+elif [[ ${ICP_VERSION} == "3.1.2" ]] ; then
+    upgradeTo31x
 else
     printf "\033[31m[ERROR] Unrecognized version; Unable to perform upgrade\033[0m\n"
     exit 1

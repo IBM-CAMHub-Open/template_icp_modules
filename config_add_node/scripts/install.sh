@@ -6,7 +6,7 @@ function config_kubectl() {
     printf "\033[32m[*] Configuring kubectl...... \033[0m\n"
     sudo docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data $DOCKER_REPO:$2-ee cp /usr/local/bin/kubectl /data
     export MASTER_IP=`awk 'f{print;f=0} /\[master\]/{f=1}' $1/hosts`
-    export CLUSTER_NAME=`sed -n -e '/# cluster_name/ s/.*\: *//p' $1/config.yaml`
+    export CLUSTER_NAME=`sed -n -e '/cluster_name/ s/.*\: *//p' $1/config.yaml`
     if [ -z "$MASTER_IP" ] || [ -z "$CLUSTER_NAME" ] ; then
         printf "\033[31m[ERROR] One or more variables are empty or undefined\033[0m\n"
         exit 1

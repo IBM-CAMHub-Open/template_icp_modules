@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "sleep 60s to allow destroyed resources to show up"
-sleep 60
+echo "sleep 180s to allow destroyed resources to show up"
+sleep 180
 
 source /tmp/icp-bootmaster-scripts/functions.sh
 
@@ -46,6 +46,7 @@ fi
 
 # Cycle through old ips to find removed workers
 for oip in "${oldlist[@]}"; do
+  echo "process old list ip ${oip}"
   if  ping -c 1 -W 1 "${oip}"; then 
 
 	  if [[ "${newlist[@]}" =~ "${oip}" ]]; then
@@ -54,6 +55,7 @@ for oip in "${oldlist[@]}"; do
 
 	  if [[ ! " ${newlist[@]} " =~ " ${oip} " ]]; then
 	    # whatever you want to do when arr doesn't contain value
+	    echo "remove ip ${oip}"
 	    removed+=(${oip})
 	  fi
   else
@@ -65,8 +67,9 @@ done
 
 # Cycle through new ips to find added workers
 for nip in "${newlist[@]}"; do
+  echo "process NEW list ip ${nip}"
   if [[ "${oldlist[@]}" =~ "${nip}" ]]; then
-    echo "${nip} is still here"
+    echo "${nip} is still here, new list"
   fi
 
   if [[ ! " ${oldlist[@]} " =~ " ${nip} " ]]; then

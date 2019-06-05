@@ -90,6 +90,8 @@ elif [[ ${ICP_VERSION} == "3.1.0" ]] ; then
     rollback31x
 elif [[ ${ICP_VERSION} == "3.1.1" ]] ; then
     rollback31x
+elif [[ ${ICP_VERSION} == "3.1.2" ]] ; then
+    rollback31x
 else
     printf "\033[31m[ERROR] Unrecognized version; Unable to perform rollback\033[0m\n"
     exit 1
