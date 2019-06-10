@@ -74,6 +74,14 @@ variable  "icp-version" {
   default = "2.1.0.2"
 }
 
+variable  "icp-version-upgrade" {
+  description = "Version of ICP to provision. Used to trigger the upgrade"
+  default = ""
+}
+variable  "image-location-upgrade" {
+  description = "Location of ICP image to provision. Used during upgrade upgrade"
+  default = "false"
+}
 variable "ssh_user" {
   description = "Username to ssh into the ICP cluster. This is typically the default user with for the relevant cloud vendor"
   default     = "root"

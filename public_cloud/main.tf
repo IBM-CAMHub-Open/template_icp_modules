@@ -156,6 +156,10 @@ resource "null_resource" "icp-docker" {
 resource "null_resource" "icp-image" {
   depends_on = ["null_resource.icp-docker"]
 
+  triggers {
+    imageversion = "${var.image_location}"
+  }
+
   count = "${var.parallell-image-pull ? var.cluster_size : "1"}"
 
   # Boot node is always the first entry in the IP list, so if we're not pulling in parallell this will only happen on boot node
@@ -394,7 +398,38 @@ resource "null_resource" "icp-worker-scaler" {
       "/tmp/icp-bootmaster-scripts/scaleworkers.sh ${var.icp-version}"
     ]
   }
+}
 
+resource "null_resource" "icp-upgrade-version" {
+  depends_on = ["null_resource.icp-worker-scaler"]
 
+  triggers {
+    icpversion = "${var.icp-version-upgrade}"
+  }
 
+  connection {
+    host          = "${local.boot-node}"
+    user = "${var.ssh_user}"
+    private_key   = "${local.ssh_key}"
+    agent = "${var.ssh_agent}"
+    bastion_host  = "${var.bastion_host}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p /tmp/icp-bootmaster-scripts"
+    ]
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/scripts/boot-master/"
+    destination = "/tmp/icp-bootmaster-scripts"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod a+x /tmp/icp-bootmaster-scripts/upgrade_icp.sh",
+      "/tmp/icp-bootmaster-scripts/upgrade_icp.sh ${var.icp-version} ${var.image-location-upgrade}" 
+    ]
+  }
 }

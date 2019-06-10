@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "sleep 180s to allow destroyed resources to show up"
-sleep 180
+echo "sleep 60s to allow destroyed resources to show up"
+sleep 60
 
 source /tmp/icp-bootmaster-scripts/functions.sh
 

@@ -18,11 +18,18 @@ sourcedir=/opt/ibm/cluster/images
 
 source /tmp/icp-bootmaster-scripts/functions.sh
 
+echo "load-image.sh image=${image} image_location=${image_location} image_file=${image_file}"
 
 # Figure out the version
 # This will populate $org $repo and $tag
 parse_icpversion ${image}
 echo "registry=${registry:-not specified} org=$org repo=$repo tag=$tag"
+
+if [ -f ${sourcedir}/${image_file} ]; then
+ 	echo "image file seems to have been already loaded to ${sourcedir}/${image_file}, do nothing"
+  exit 0
+
+fi
 
 if [[ "${image_location}" != "false" ]]
 then
