@@ -98,7 +98,12 @@ resource "null_resource" "setup_installer_tar" {
   provisioner "file" {
     source = "${path.module}/scripts/set_ansible_user.sh"
     destination = "~/ibm-cloud-private-x86_64-${var.icp_version}/set_ansible_user.sh"
-  }  
+  }
+
+  provisioner "file" {
+    source = "${path.module}/scripts/power_env_setting.sh"
+    destination = "~/ibm-cloud-private-x86_64-${var.icp_version}/power_env_setting.sh"
+  }
 
   provisioner "remote-exec" {
     inline = [
@@ -118,6 +123,8 @@ resource "null_resource" "setup_installer_tar" {
       "sed -i 's/# cluster_CA_domain.*/cluster_CA_domain: ${var.icp_cluster_name}.${var.vm_domain}/g' ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "sed -i 's/default_admin_user.*/default_admin_user: ${var.icp_admin_user}/g' ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "sed -i 's/.*default_admin_password.*/default_admin_password: ${var.icp_admin_password}/g' ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
+      "chmod 755  ~/ibm-cloud-private-x86_64-${var.icp_version}/power_env_setting.sh",
+      "bash -c '~/ibm-cloud-private-x86_64-${var.icp_version}/power_env_setting.sh ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster ${var.icp_version}'",
       "chmod 755  ~/ibm-cloud-private-x86_64-${var.icp_version}/set_ansible_user.sh",
 	    "bash -c '~/ibm-cloud-private-x86_64-${var.icp_version}/set_ansible_user.sh ${var.vm_os_user} ${var.icp_version}'",
       "sudo cp ~/.ssh/id_rsa ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/ssh_key",
