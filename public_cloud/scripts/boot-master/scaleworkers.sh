@@ -148,9 +148,40 @@ then
   $kubectl config set-credentials user --client-certificate=${ICPDIR}/cfc-certs/kubernetes/kubecfg.crt --client-key=${ICPDIR}/cfc-certs/kubernetes/kubecfg.key
   $kubectl config set-context kubectl --user=user
   $kubectl config use-context kubectl
-  $kubectl get nodes
-  nodescmd=$($kubectl get nodes)
-  echo "$nodescmd"
+  #$kubectl get nodes
+  err=$(mktemp)
+  nodescmd=$($kubectl get nodes 2>err)
+  nodescmderr=$(< err)
+  rm $err
+  echo "Get nodes output is $nodescmd"
+  echo "Get nodes error is $nodescmderr"
+  #If kubectl is rejected on localhost use ${cluster_ca_name} 
+  if [[ ! -z $nodescmderr ]]
+  then
+  	echo "Use cluster_ca_name for kube configuration instead of localhost"
+	$kubectl config set-cluster cfc-cluster --server=https://${cluster_ca_name}:8001 --insecure-skip-tls-verify=true
+  	$kubectl config set-context kubectl --cluster=cfc-cluster
+  	$kubectl config set-credentials user --client-certificate=${ICPDIR}/cfc-certs/kubernetes/kubecfg.crt --client-key=${ICPDIR}/cfc-certs/kubernetes/kubecfg.key
+  	$kubectl config set-context kubectl --user=user
+  	$kubectl config use-context kubectl  
+  	#Try 5 times. kubectl command fails to get nodes sometimes due to connectivity issue.
+	for count in {1..5}
+	do
+        #$kubectl get nodes
+		err=$(mktemp)
+  		nodescmd=$($kubectl get nodes 2>err)
+  		nodescmderr=$(< err)
+  		rm $err
+        if [[ ! -z $nodescmderr ]]
+        then
+      	    echo Error is $nodescmderr
+            echo "Retry get nodes $count out of 5"
+		else
+            echo "Get nodes output is $nodescmd"
+            break
+        fi
+	done  		
+  fi
 
   list=$(IFS=, ; echo "${removed[*]}")
 
