@@ -1,5 +1,32 @@
 #!/bin/bash
 
+function delnode()
+{
+	deliphost=$1
+	failed="true"
+	#Try 5 times. kubectl command fails to delete nodes sometimes due to connectivity issue.
+	for count in {1..5}
+	do
+  		err=$(mktemp)
+  		delcmd=$($kubectl delete node ${deliphost} 2>err)
+  		delcmderr=$(< err)	    	
+	    rm $err
+    	if [[ ! -z $delcmderr ]]
+    	then
+  	    	echo Error is $delcmderr
+  	    	echo "Retry delete nodes $count out of 5"
+		else
+        	echo "Delete nodes output is $delcmd"
+        	printf "\033[32m[*] Node ${deliphost} has been removed successfully \033[0m\n"
+        	failed="false"
+        	break
+    	fi
+    done	
+    if [[ "$failed" == "true" ]]; then
+    	printf "\033[32m[*] Node ${deliphost} failed to remove\033[0m\n"
+	fi
+}
+
 echo "sleep 300s to allow destroyed resources to show up"
 sleep 300
 
@@ -189,8 +216,7 @@ then
   
 	  echo "${ip} remove node"
 	  if [[ "$nodescmd" =~ "${ip}" ]]; then
-	  	delcmd=$($kubectl delete node ${ip})
-	    printf "\033[32m[*] Node ${ip} has been removed successfully \033[0m\n"	  	
+		delnode ${ip}
 	  else
         printf "\033[31m[ERROR] Node ${ip} not found, try to find the node by host\033[0m\n"
       
@@ -202,14 +228,8 @@ then
 					  iphostname=$(ssh -o StrictHostKeyChecking=no -i ${ICPDIR}/ssh_key ${oip} "awk '\$1==\"${ip}\" {print \$2}' /etc/hosts")  
 			          echo "iphostname=$iphostname"
 						if ! [ -z "${iphostname}" ]; then
-	  					  delcmd=$($kubectl delete node ${iphostname})
-	  					  RC=$?
-	  					  if [ $RC -eq 0 ]; then
-						    printf "\033[32m[*] Node ${iphostname} has been removed successfully \033[0m\n"
-					      else
-					        printf "\033[31m[ERROR] Node ${iphostname} failed to remove\033[0m\n"
-					     fi  
-					     break 
+						  delnode ${iphostname}
+ 					      break 
 						fi	
 					fi	
 		      fi
