@@ -70,9 +70,27 @@ if [ ${#newlist[@]} -eq 0 ]; then
   exit 0
 fi
 
+#Filter duplicate entries.
+declare -a unqoldlist
+for oip in "${oldlist[@]}"; do	
+	if [ ${#unqoldlist[@]} -eq 0 ]; then	    
+    	unqoldlist+=(${oip})
+	else
+        found="false"
+        for unoip in "${unqoldlist[@]}"; do
+            if [[ "$unoip" == "$oip" ]]; then
+                found="true"
+                break
+            fi
+        done
+        if [[ "$found" == "false" ]]; then
+            unqoldlist+=(${oip})
+        fi			
+	fi	
+done
 
 # Cycle through old ips to find removed workers
-for oip in "${oldlist[@]}"; do
+for oip in "${unqoldlist[@]}"; do
   echo "process old list ip ${oip}"
   if  ping -c 1 -W 1 "${oip}"; then 
 
@@ -95,11 +113,11 @@ done
 # Cycle through new ips to find added workers
 for nip in "${newlist[@]}"; do
   echo "process NEW list ip ${nip}"
-  if [[ "${oldlist[@]}" =~ "${nip}" ]]; then
+  if [[ "${unqoldlist[@]}" =~ "${nip}" ]]; then
     echo "${nip} is still here, new list"
   fi
 
-  if [[ ! " ${oldlist[@]} " =~ " ${nip} " ]]; then
+  if [[ ! " ${unqoldlist[@]} " =~ " ${nip} " ]]; then
     # whatever you want to do when arr doesn't contain value
     
     END=5
