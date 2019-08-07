@@ -8,8 +8,8 @@ function delnode()
 	for count in {1..5}
 	do
   		err=$(mktemp)
-  		delcmd=$($kubectl delete node ${deliphost} 2>err)
-  		delcmderr=$(< err)	    	
+  		delcmd=$($kubectl delete node ${deliphost} 2>$err)
+  		delcmderr=$(< $err)	    	
 	    rm $err
     	if [[ ! -z $delcmderr ]]
     	then
@@ -195,8 +195,8 @@ then
   $kubectl config use-context kubectl
   #$kubectl get nodes
   err=$(mktemp)
-  nodescmd=$($kubectl get nodes 2>err)
-  nodescmderr=$(< err)
+  nodescmd=$($kubectl get nodes 2>$err)
+  nodescmderr=$(< $err)
   rm $err
   echo "Get nodes output is $nodescmd"
   echo "Get nodes error is $nodescmderr"
@@ -214,8 +214,8 @@ then
 	do
         #$kubectl get nodes
 		err=$(mktemp)
-  		nodescmd=$($kubectl get nodes 2>err)
-  		nodescmderr=$(< err)
+  		nodescmd=$($kubectl get nodes 2>$err)
+  		nodescmderr=$(< $err)
   		rm $err
         if [[ ! -z $nodescmderr ]]
         then
