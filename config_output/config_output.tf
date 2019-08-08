@@ -5,6 +5,7 @@ resource "null_resource" "config_output_dependsOn" {
   }
 }
 resource "null_resource" "config-output-scripts" {
+  depends_on = ["null_resource.config_output_dependsOn"]
   connection {
     type = "ssh"
     user = "${var.vm_os_user}"
