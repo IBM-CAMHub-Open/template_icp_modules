@@ -8,8 +8,8 @@ resource "null_resource" "config-output-scripts" {
   connection {
     type = "ssh"
     user = "${var.vm_os_user}"
-    password =  "${var.vm_os_password}"
-    private_key = "${var.vm_os_private_key}"
+    password =  "${var.vm_os_password}"    
+    private_key = "${length(var.vm_os_private_key) == 0 ? "" : "${base64decode(var.vm_os_private_key)}"}"
     host = "${var.master_node_ip}"
     bastion_host        = "${var.bastion_host}"
     bastion_user        = "${var.bastion_user}"
