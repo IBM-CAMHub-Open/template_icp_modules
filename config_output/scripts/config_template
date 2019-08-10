@@ -4,18 +4,17 @@ clusters:
     insecure-skip-tls-verify: true
     server: https://@@apiserver@@:@@apiport@@
   name: @@cluster@@
-
 contexts:
 - context:
     cluster: @@cluster@@
     namespace: default
-    user: admin
+    user: @@user@@
   name: @@cluster@@-context
 current-context: @@cluster@@-context
 kind: Config
 preferences: {}
 users:
-- name: admin
+- name: @@user@@
   user:
     client-certificate-data: @@client-certificate@@
     client-key-data: @@client-key@@

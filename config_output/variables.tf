@@ -44,3 +44,8 @@ variable "reg_port" {
   type = "string"
   description = "Private docker registry port"
 }
+
+variable "icp_admin_user" {
+  type = "string"
+  default = "admin"
+}

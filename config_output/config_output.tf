@@ -33,7 +33,7 @@ resource "null_resource" "config-output-scripts" {
 
 resource "camc_scriptpackage" "get_cluster_config" {
 	depends_on = ["null_resource.config-output-scripts"]
-  	program = ["sudo /bin/bash /tmp/gather_output.sh -c ${var.cluster_name} -as ${var.api_server} -ap ${var.api_port} -rs ${var.reg_server} -rp ${var.reg_port}"]
+  	program = ["sudo /bin/bash /tmp/gather_output.sh -u ${var.icp_admin_user} -c ${var.cluster_name} -as ${var.api_server} -ap ${var.api_port} -rs ${var.reg_server} -rp ${var.reg_port}"]
   	on_create = true
   	remote_host = "${var.master_node_ip}"
   	remote_user = "${var.vm_os_user}"

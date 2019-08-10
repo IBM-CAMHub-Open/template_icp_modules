@@ -21,8 +21,14 @@ while test $# -gt 0; do
   [[ $1 =~ ^-ap|--apiport ]] && { PARAM_API_PORT="${2}"; shift 2; continue; };
   [[ $1 =~ ^-rs|--regsrvr ]] && { PARAM_REG_SERVER="${2}"; shift 2; continue; };
   [[ $1 =~ ^-rp|--regport ]] && { PARAM_REG_PORT="${2}"; shift 2; continue; };
+  [[ $1 =~ ^-u|--user ]] && { PARAM_ADMIN_USER="${2}"; shift 2; continue; };
   break
 done
+
+if [ -z "$PARAM_ADMIN_USER" ]; then
+	echo "Admin username is missing. Use default value admin." >> ${LOG_FILE}
+	PARAM_ADMIN_USER=admin
+fi
 
 if [ -z "$PARAM_CLUSTER_NAME" ]; then
 	echo "Cluster name is missing" >> ${LOG_FILE}
@@ -49,6 +55,7 @@ sed -i -e "s/@@apiserver@@/${PARAM_API_SERVER}/" /tmp/config_template
 sed -i -e "s/@@apiport@@/${PARAM_API_PORT}/" /tmp/config_template
 sed -i -e "s/@@client-certificate@@/${CLIENT_CERTIFICATE_BASE64}/" /tmp/config_template
 sed -i -e "s/@@client-key@@/${CLIENT_KEY_BASE64}/" /tmp/config_template
+sed -i -e "s/@@user@@/${PARAM_ADMIN_USER}/" /tmp/config_template
 
 echo "Generate kube config" >> ${LOG_FILE}
 CONFIG_BASE64=$(cat /tmp/config_template | base64 -w0)
