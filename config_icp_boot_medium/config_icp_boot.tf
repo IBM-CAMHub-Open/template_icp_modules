@@ -108,6 +108,10 @@ resource "null_resource" "setup_installer_tar" {
   provisioner "remote-exec" {
     inline = [
       "set -e",
+      "systemArch=$(arch)",
+      "numcpu=`cat /proc/cpuinfo | grep processor | wc -l`",
+      "echo CPU is $numcpu Arch is $systemArch",
+      "if [ $numcpu -ge 32 ] && [ \"$systemArch\" = \"ppc64le\" ] && [ -f ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/power.config.yaml ]; then echo \"Use power configuration\";cp ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml.orig; cp ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/power.config.yaml ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml; fi",            
       "echo \"version: ${var.icp_version}\" >> ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"cluster_lb_address: ${var.cluster_lb_address}\" >> ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"proxy_lb_address: ${var.proxy_lb_address}\" >> ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",    
@@ -126,7 +130,7 @@ resource "null_resource" "setup_installer_tar" {
       "chmod 755  ~/ibm-cloud-private-x86_64-${var.icp_version}/power_env_setting.sh",
       "bash -c '~/ibm-cloud-private-x86_64-${var.icp_version}/power_env_setting.sh ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster ${var.icp_version}'",
       "chmod 755  ~/ibm-cloud-private-x86_64-${var.icp_version}/set_ansible_user.sh",
-	    "bash -c '~/ibm-cloud-private-x86_64-${var.icp_version}/set_ansible_user.sh ${var.vm_os_user} ${var.icp_version}'",
+      "bash -c '~/ibm-cloud-private-x86_64-${var.icp_version}/set_ansible_user.sh ${var.vm_os_user} ${var.icp_version}'",
       "sudo cp ~/.ssh/id_rsa ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/ssh_key",
       "cd  ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster",
       "export DOCKER_REPO=`sudo docker images |grep inception |grep ${var.icp_version} |awk '{print $1}'`",
