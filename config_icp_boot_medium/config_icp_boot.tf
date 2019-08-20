@@ -45,6 +45,8 @@ resource "null_resource" "setup_installer" {
   provisioner "remote-exec" {
     inline = [
       "set -e",
+      "echo \"password_rules:\" >> ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",  
+      "echo \"- ^([a-zA-Z0-9@#\\-]{8,})$\" >> ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",                      
       "echo \"version: ${var.icp_version}\" >> ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"cluster_lb_address: ${var.cluster_lb_address}\" >> ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",
       "echo \"proxy_lb_address: ${var.proxy_lb_address}\" >> ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster/config.yaml",      

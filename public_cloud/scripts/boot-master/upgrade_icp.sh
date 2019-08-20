@@ -118,6 +118,7 @@ else
     exit 1  
 fi
 
+sudo rm -rf /opt/ibm/.image_version
 echo "${1}" | sudo tee -a /opt/ibm/.image_version
 
 
