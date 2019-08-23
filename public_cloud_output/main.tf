@@ -19,7 +19,7 @@ resource "null_resource" "config-output-scripts" {
 }
 
 resource "camc_scriptpackage" "get_cluster_config" {
-	depends_on = ["null_resource.config-output-scripts"]
+	  depends_on = ["null_resource.config-output-scripts"]
   	program = ["sudo /bin/bash /tmp/gather_output.sh ${var.cluster_CA_domain}"]
   	on_create = true
   	remote_host = "${element(var.icp_master, 0)}"
