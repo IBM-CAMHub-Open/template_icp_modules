@@ -104,7 +104,8 @@ resource "null_resource" "icp_upgrade" {
       "[ ${var.icp_version} != \"2.1.0.3-fp1\" ] && cd ~/ibm-cloud-private-x86_64-${var.icp_version}/cluster || cd ~/ibm-cloud-private-x86_64-2.1.0.3/cluster",
       "chmod 755 /tmp/rollback_icp.sh",
       "echo /tmp/rollback_icp.sh ${var.icp_version} ${var.icp_cluster_name} ${var.kube_apiserver_secure_port} ${var.master_node_ip}",
-      "/tmp/rollback_icp.sh ${var.icp_version} ${var.icp_cluster_name} ${var.kube_apiserver_secure_port} ${var.master_node_ip}"
+      "/tmp/rollback_icp.sh ${var.icp_version} ${var.icp_cluster_name} ${var.kube_apiserver_secure_port} ${var.master_node_ip}",
+      "rm -fr ~/ibm-cloud-private-x86_64-${var.icp_version}"
     ]
   }
 }

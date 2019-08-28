@@ -110,7 +110,6 @@ if [[ $PLATFORM == *"redhat"* ]]; then
   PLATFORM="rhel"
 fi
 
-# Get chef's URL from parameter
 ARCH=$(uname -m)
 ICP_INSTALLER_FILE_NAME="ibm-cloud-private-${ARCH}-${PARAM_ICP_VERSION}.tar.gz"
 URL_REGEX='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'

@@ -68,6 +68,9 @@ upgradeTo2103fp1()
     fi
 }
 
+##
+# Reusing the same function for 3.2.x 
+##
 setupClusterDirectory31x()
 {
     ## Create and populate new cluster directory (exclude prior release ICP tar file)
@@ -75,7 +78,7 @@ setupClusterDirectory31x()
     mkdir -p ${clusterDir31x}
     cd ${CURRENT_CLUSTER_DIR}
     find . -type d -name "images" -prune -o -type f -print | cpio -pdum ${clusterDir31x}
-    rm -f ${clusterDir31x}/upgrade_version
+    rm -fr ${clusterDir31x}/upgrade_version ${clusterDir31x}/.upgrade
 
     ## Ensure version is properly set in copied config.yaml file
     if grep -q "^version:" ${clusterDir31x}/config.yaml ; then
@@ -103,6 +106,9 @@ setupClusterDirectory31x()
     fi
 }
 
+##
+# Reusing the same function for 3.2.x 
+##
 upgradeTo31x()
 {
     clusterDir=~/ibm-cloud-private-x86_64-${ICP_VERSION}/cluster
