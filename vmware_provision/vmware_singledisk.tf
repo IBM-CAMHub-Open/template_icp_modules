@@ -133,6 +133,27 @@ rm -rf $user_auth_key_file_private_temp
 EOF
   }
 
+  provisioner "local-exec" {
+    command = "echo \"${self.clone.0.customize.0.network_interface.0.ipv4_address}       ${self.name}.${var.vm_domain} ${self.name}\" >> /tmp/${var.random}/hosts"
+  }
+}
+
+resource "null_resource" "add_ssh_key" {
+  depends_on = ["vsphere_virtual_machine.vm"]
+  count = "${var.vm_disk2_enable == "false" && var.enable_vm == "true" ? length(var.vm_ipv4_address) : 0}"
+  connection {
+    type     = "ssh"
+    user     = "${var.vm_os_user}"
+    password = "${var.vm_os_password}"
+    host = "${var.vm_ipv4_address[count.index]}"
+    bastion_host        = "${var.bastion_host}"
+    bastion_user        = "${var.bastion_user}"
+    bastion_private_key = "${ length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
+    bastion_port        = "${var.bastion_port}"
+    bastion_host_key    = "${var.bastion_host_key}"
+    bastion_password    = "${var.bastion_password}"        
+  }
+  
   # Execute the script remotely
   provisioner "remote-exec" {
     inline = [
@@ -140,10 +161,6 @@ EOF
       "bash -c 'chmod +x VM_add_ssh_key.sh'",
       "bash -c './VM_add_ssh_key.sh  \"${var.vm_os_user}\" \"${var.vm_public_ssh_key}\" \"${var.vm_private_ssh_key}\">> VM_add_ssh_key.log 2>&1'",
     ]
-  }
-
-  provisioner "local-exec" {
-    command = "echo \"${self.clone.0.customize.0.network_interface.0.ipv4_address}       ${self.name}.${var.vm_domain} ${self.name}\" >> /tmp/${var.random}/hosts"
   }
 }
 
@@ -283,6 +300,30 @@ rm -rf $user_auth_key_file_private_temp
 EOF
   }
 
+
+  provisioner "local-exec" {
+    command = "echo \"${self.clone.0.customize.0.network_interface.0.ipv4_address}       ${self.name}.${var.vm_domain} ${self.name}\" >> /tmp/${var.random}/hosts"
+  }
+}
+
+resource "null_resource" "add_ssh_key_2disk" {
+  count = "${var.vm_disk2_enable == "true" && var.enable_vm == "true" ? length(var.vm_ipv4_address) : 0}"
+  depends_on = ["vsphere_virtual_machine.vm2disk"]
+  
+  # Specify the connection
+  connection {
+    type     = "ssh"
+    user     = "${var.vm_os_user}"
+    password = "${var.vm_os_password}"
+    host = "${var.vm_ipv4_address[count.index]}"
+    bastion_host        = "${var.bastion_host}"
+    bastion_user        = "${var.bastion_user}"
+    bastion_private_key = "${ length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
+    bastion_port        = "${var.bastion_port}"
+    bastion_host_key    = "${var.bastion_host_key}"
+    bastion_password    = "${var.bastion_password}"        
+  }
+  
   # Execute the script remotely
   provisioner "remote-exec" {
     inline = [
@@ -292,16 +333,14 @@ EOF
       "bash -c './VM_add_ssh_key.sh  \"${var.vm_os_user}\" \"${var.vm_public_ssh_key}\" \"${var.vm_private_ssh_key}\">> VM_add_ssh_key.log 2>&1'",
     ]
   }
-
-  provisioner "local-exec" {
-    command = "echo \"${self.clone.0.customize.0.network_interface.0.ipv4_address}       ${self.name}.${var.vm_domain} ${self.name}\" >> /tmp/${var.random}/hosts"
-  }
 }
 
+
 resource "null_resource" "vm-create_done" {
-  depends_on = ["vsphere_virtual_machine.vm", "vsphere_virtual_machine.vm2disk"]
+  depends_on = ["vsphere_virtual_machine.vm", "vsphere_virtual_machine.vm2disk", "null_resource.add_ssh_key", "null_resource.add_ssh_key_2disk"]
 
   provisioner "local-exec" {
     command = "echo 'VM creates done for ${var.vm_name[count.index]}X.'"
   }
 }
+
