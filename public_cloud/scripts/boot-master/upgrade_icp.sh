@@ -37,10 +37,10 @@ if [[ ${tag} =~ "ee" ]]; then
     
 	IMAGE_LOCATION=$(basename ${2})
 	echo "IMAGE_LOCATION=$IMAGE_LOCATION"
-	IMAGE_FILE_PATH=$ICPDIR/$IMAGE_LOCATION
+	IMAGE_FILE_PATH=$ICPDIR/images/$IMAGE_LOCATION
 	
 	echo "this is the ee version, waiting for file $IMAGE_FILE_PATH"
-	END=60
+	END=140
 	x=$END
 	while [ $x -gt 0 ]; 
 	do 
