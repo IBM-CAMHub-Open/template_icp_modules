@@ -34,3 +34,5 @@ variable "bastion_private_key_base64" {
   default = ""
   description = "Base64 encoded private key for bastion host. This is typically the ssh key but can vary based on cloud vendor."
 }
+
+variable "dependsOn"            { description = "Boolean for dependency"}

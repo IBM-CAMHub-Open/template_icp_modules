@@ -1,6 +1,11 @@
 ###
 # Gather output for mcm 3.2
 ###
+resource "null_resource" "icp_install_finished" {
+  provisioner "local-exec" {
+    command = "echo 'IBM Cloud Private has been successfully deployed.  Resource ID : '${var.dependsOn}"
+  }
+}
 resource "null_resource" "config-output-scripts" {
   connection {
     type = "ssh"
