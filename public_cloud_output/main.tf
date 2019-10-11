@@ -7,6 +7,7 @@ resource "null_resource" "icp_install_finished" {
   }
 }
 resource "null_resource" "config-output-scripts" {
+  depends_on = ["null_resource.icp_install_finished"]
   connection {
     type = "ssh"
     user = "${var.ssh_user}"  
