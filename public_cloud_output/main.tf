@@ -34,6 +34,3 @@ resource "camc_scriptpackage" "get_cluster_config" {
   	bastion_private_key = "${var.bastion_private_key_base64}"
   	bastion_user = "${var.bastion_user}"
 }
-###
-# End gather output for mcm 3.2
-###
