@@ -1,25 +1,12 @@
-resource "null_resource" "image_copy" {
-  # Only copy image from local location if not available remotely
-  count = "${var.image_location != "" && ! (substr(var.image_location, 0, 3) != "nfs"  || substr(var.image_location, 0, 4) != "http") ? 1 : 0}"
-
-  provisioner "file" {
-    connection {
-      host          = "${var.boot_ipv4_address_private}"
-      user          = "icpdeploy"
-      private_key   = "${var.boot_private_key_pem}"
-      bastion_host  = "${var.private_network_only ? var.boot_ipv4_address_private : var.boot_ipv4_address}"
-    }
-
-    source = "${var.image_location}"
-    destination = "/tmp/${basename(var.image_location)}"
-  }
-}
-
+#resource "null_resource" "image_copied" {
+#  provisioner "local-exec" {
+#    command = "echo 'IBM Cloud Private Image has been successfully copied. Loading resource ID : '${var.image_copy_finished}"
+#  }
+#}
 resource "null_resource" "image_load" {
   # Only do an image load if we have provided a location. Presumably if not we'll be loading from private registry server
   count = "${var.image_location != "" ? 1 : 0}"
-  depends_on = ["null_resource.image_copy"]
-
+ # depends_on = ["null_resource.image_copied"]
 
   connection {
     host          = "${var.boot_ipv4_address_private}"
@@ -45,7 +32,7 @@ resource "null_resource" "image_load" {
   }
 }
 
-resource "null_resource" "image_loading_finished" {
+resource "null_resource" "image_load_finished" {
   depends_on = ["null_resource.image_load"]
   provisioner "local-exec" {
     command = "echo 'IBM Cloud Private Image has been successfully loaded. '"

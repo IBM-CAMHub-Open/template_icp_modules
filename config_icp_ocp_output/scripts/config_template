@@ -1,0 +1,20 @@
+apiVersion: v1
+clusters:
+- cluster:
+    insecure-skip-tls-verify: true
+    server: https://@@apiserver@@:@@apiport@@
+  name: @@cluster@@
+contexts:
+- context:
+    cluster: @@cluster@@
+    namespace: default
+    user: @@user@@
+  name: @@cluster@@-context
+current-context: @@cluster@@-context
+kind: Config
+preferences: {}
+users:
+- name: @@user@@
+  user:
+    client-certificate-data: @@client-certificate@@
+    client-key-data: @@client-key@@

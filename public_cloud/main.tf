@@ -1,8 +1,8 @@
 
 # Workaround for lack of module dependencies in terraform. See https://github.com/hashicorp/terraform/issues/10462
-resource "null_resource" "image_loading_finished" {
+resource "null_resource" "image_load_finished" {
   provisioner "local-exec" {
-    command = "echo 'IBM Cloud Private Image has been successfully loaded. Loading resource ID : '${var.dependsOn}"
+    command = "echo 'IBM Cloud Private Image has been successfully loaded. Loading resource ID : '${var.image_load_finished}"
   }
 }
 
@@ -19,7 +19,7 @@ resource "tls_private_key" "icpkey" {
 ## Cluster Pre-config hook
 resource "null_resource" "icp-cluster-preconfig-hook" {
   count = "${contains(keys(var.hooks), "cluster-preconfig") ? var.cluster_size : 0}"
-  depends_on = ["null_resource.image_loading_finished"]
+  depends_on = ["null_resource.image_load_finished"]
   connection {
       host          = "${element(local.icp-ips, count.index)}"
       user          = "${var.ssh_user}"
@@ -38,7 +38,7 @@ resource "null_resource" "icp-cluster-preconfig-hook" {
 
 ## Actions that has to be taken on all nodes in the cluster
 resource "null_resource" "icp-cluster" {
-  depends_on = ["null_resource.icp-cluster-preconfig-hook", "null_resource.image_loading_finished"]
+  depends_on = ["null_resource.icp-cluster-preconfig-hook", "null_resource.image_load_finished"]
   count = "${var.cluster_size}"
 
   connection {
@@ -160,11 +160,42 @@ resource "null_resource" "icp-docker" {
   }
 }
 
+resource "null_resource" "icp-image" {
+  depends_on = ["null_resource.icp-docker"]
+
+  count = "${var.parallell-image-pull ? var.cluster_size : "1"}"
+
+  # Boot node is always the first entry in the IP list, so if we're not pulling in parallell this will only happen on boot node
+  connection {
+    host          = "${element(local.icp-ips, count.index)}"
+    user          = "${var.ssh_user}"
+    private_key   = "${local.ssh_key}"
+    agent         = "${var.ssh_agent}"
+    bastion_host  = "${var.bastion_host}"
+  }
+
+  # If this is enterprise edition we'll need to copy the image file over and load it in local repository
+  // We'll need to find another workaround while tf does not support count for this
+  provisioner "file" {
+      # count = "${var.enterprise-edition ? 1 : 0}"
+      source = "${var.enterprise-edition ? var.image_file : "/dev/null" }"
+      #destination = "/tmp/${basename(var.image_file)}"
+
+      destination = "${var.enterprise-edition ? "/tmp/${basename(var.image_file)}" : "/dev/null" }"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo \"Loading image ${var.icp-version}\"",
+      "/tmp/icp-bootmaster-scripts/load-image.sh ${var.icp-version} /tmp/${basename(var.image_file)} \"${var.image_location}\" ${var.registry_server} ${var.registry_username} ${var.registry_password}"
+    ]
+  }
+}
 
 # First make sure scripts and configuration files are copied
 resource "null_resource" "icp-boot" {
 
-  depends_on = ["null_resource.icp-docker"]
+  depends_on = ["null_resource.icp-image"]
 
   # The first master is always the boot master where we run provisioning jobs from
   connection {

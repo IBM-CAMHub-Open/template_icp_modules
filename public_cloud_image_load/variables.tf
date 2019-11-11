@@ -23,3 +23,5 @@ variable "docker_username" {
 variable "docker_password" {
 
 }
+
+variable "image_copy_finished"            { description = "Boolean for dependency"}

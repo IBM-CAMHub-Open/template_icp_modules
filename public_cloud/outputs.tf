@@ -12,9 +12,7 @@ output "icp_private_key" {
 output "install_complete" {
   depends_on  = ["null_resource.icp_deploy_finished"]
   description = "Boolean value that is set to true when ICP installation process is completed"
-  #value       = "${data.external.check_installed.result["installation_finished"]}"
   value       = "${null_resource.icp_deploy_finished.id}"
-  #value       = "true"
 }
 
 output "icp_version" {

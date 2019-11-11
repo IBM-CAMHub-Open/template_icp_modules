@@ -41,13 +41,11 @@ resource "null_resource" "setup_installer" {
   provisioner "remote-exec" {
     inline = [
       "set -e",
-      "sed -i 's/.*default_admin_password.*/default_admin_password: ${var.icp_admin_password}/g' /opt/ibm-cloud-private-rhos-${var.icp_version}/cluster/config.yaml",
-      "sed -i -e '/default_admin_password/i default_admin_user: ${var.icp_admin_user}' /opt/ibm-cloud-private-rhos-${var.icp_version}/cluster/config.yaml",
-      "sed -i -e '/default_admin_user/i cluster_name: ${var.icp_cluster_name}' /opt/ibm-cloud-private-rhos-${var.icp_version}/cluster/config.yaml",
+      "echo 'cluster_name: ${var.icp_cluster_name}' >> /opt/ibm-cloud-private-rhos-${var.icp_version}/cluster/config.yaml",
+      "echo 'default_admin_user: ${var.icp_admin_user}' >> /opt/ibm-cloud-private-rhos-${var.icp_version}/cluster/config.yaml",
+      "echo 'default_admin_password: ${var.icp_admin_password}' >> /opt/ibm-cloud-private-rhos-${var.icp_version}/cluster/config.yaml",
       "chmod 755 /tmp/config_cluster.sh",
-      "bash -c '/tmp/config_cluster.sh ${var.icp_master_host} ${var.icp_proxy_host} ${var.icp_management_host} ${var.ocp_master_host} ${var.ocp_vm_domain_name} ${var.icp_version} ${var.ocp_enable_glusterfs}'",
-      "cd /opt/ibm-cloud-private-rhos-${var.icp_version}/cluster",
-      "bash -c 'sudo docker run -t --net=host -e LICENSE=accept -v $(pwd):/installer/cluster:z -v /var/run:/var/run:z --security-opt label:disable ibmcom/icp-inception-amd64:${var.icp_version}-rhel-ee install-with-openshift | tee /tmp/install.log; test $${PIPESTATUS[0]} -eq 0'",
+      "bash -c '/tmp/config_cluster.sh ${var.icp_master_host} ${var.icp_proxy_host} ${var.icp_management_host} ${var.ocp_console_fqdn} ${var.ocp_vm_domain_name} ${var.icp_version} ${var.ocp_enable_glusterfs} ${var.ocp_console_port}'",
     ]
   }
 }

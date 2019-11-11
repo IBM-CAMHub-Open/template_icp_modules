@@ -20,7 +20,11 @@ variable "icp_management_host" {
   type = "string"
 }
 
-variable "ocp_master_host" {
+variable "ocp_console_fqdn" {
+  type = "string"
+}
+
+variable "ocp_console_port" {
   type = "string"
 }
 
